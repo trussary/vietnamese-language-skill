@@ -586,7 +586,7 @@ class Validator:
             other = formal if later is casual else casual
             emit("PRO001", WARN, later[0], later[1], later[2],
                  f"mixed register: “{other[2]}” and “{later[2]}” in one document",
-                 "one register per page — see references/register-guide.md")
+                 "one register per document — see references/register-matrix.md")
 
         if self.register:
             profile = self.bl.registers.get(self.register)

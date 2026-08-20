@@ -1,0 +1,88 @@
+{
+  "_readme": {
+    "purpose": "Starter vi-VN resource file. ASCII keys, NFC values, other-only plurals.",
+    "register": "Pick ONE of the two register blocks below and delete the other.",
+    "validate": "python scripts/validate_copy.py this-file.json --doctype identifier",
+    "lint": "vlc-disable: PRO001 — this template ships both registers on purpose; deleting one resolves it"
+  },
+
+  "common": {
+    "save": "Lưu",
+    "saving": "Đang lưu…",
+    "saved": "Đã lưu",
+    "cancel": "Huỷ",
+    "confirm": "Xác nhận",
+    "delete": "Xoá",
+    "edit": "Chỉnh sửa",
+    "close": "Đóng",
+    "back": "Quay lại",
+    "next": "Tiếp tục",
+    "search": "Tìm kiếm",
+    "loading": "Đang tải…",
+    "retry": "Thử lại",
+    "learnMore": "Tìm hiểu thêm",
+    "notNow": "Để sau",
+    "allow": "Cho phép"
+  },
+
+  "auth": {
+    "signIn": "Đăng nhập",
+    "signUp": "Đăng ký",
+    "signOut": "Đăng xuất",
+    "email": "Email",
+    "password": "Mật khẩu",
+    "forgotPassword": "Quên mật khẩu?",
+    "invalidCredentials": "Email hoặc mật khẩu chưa đúng. Vui lòng kiểm tra lại."
+  },
+
+  "errors": {
+    "_note": "Say what happened, then what to do. Never blame the user.",
+    "generic": "Đã có lỗi xảy ra. Vui lòng thử lại.",
+    "network": "Không kết nối được. Kiểm tra kết nối mạng rồi thử lại.",
+    "timeout": "Yêu cầu quá thời gian chờ. Vui lòng thử lại.",
+    "notFound": "Không tìm thấy nội dung này.",
+    "forbidden": "Tài khoản chưa có quyền truy cập mục này.",
+    "validation": "Thông tin chưa đúng. Vui lòng kiểm tra lại các trường được đánh dấu.",
+    "serverError": "Hệ thống đang gặp sự cố. Chúng tôi đang khắc phục."
+  },
+
+  "empty": {
+    "_note": "Never ship the internal term. Say what is missing and how to add it.",
+    "noResults": "Không có kết quả phù hợp.",
+    "noItems": "Chưa có mục nào. Nhấn + để thêm.",
+    "noNotifications": "Chưa có thông báo nào."
+  },
+
+  "counts": {
+    "_note": "Vietnamese has one plural category. other-only, always. =0 is allowed.",
+    "files": "{count, plural, other {# tệp}}",
+    "items": "{count, plural, other {# mục}}",
+    "filesWithZero": "{count, plural, =0 {Chưa có tệp nào} other {# tệp}}"
+  },
+
+  "registerSaas": {
+    "_note": "bạn — SaaS, developer tools, youth products. DELETE THE OTHER BLOCK.",
+    "welcome": "Chào mừng bạn quay lại",
+    "onboardingTitle": "Bắt đầu trong 2 phút",
+    "permissionPrompt": "Cho phép ứng dụng gửi thông báo cho bạn?",
+    "consent": "Tôi đồng ý cho ứng dụng thu thập thông tin nhằm mục đích cải thiện trải nghiệm.",
+    "trialCta": "Dùng thử miễn phí"
+  },
+
+  "registerFormal": {
+    "_note": "quý khách — customer-facing status pages and money screens. DELETE THE OTHER BLOCK.",
+    "welcome": "Kính chào Quý khách",
+    "onboardingTitle": "Quý khách vui lòng hoàn tất 3 bước sau",
+    "permissionPrompt": "Quý khách có đồng ý nhận thông báo từ ứng dụng?",
+    "consent": "Quý khách đồng ý cho chúng tôi xử lý thông tin nhằm mục đích cung cấp dịch vụ.",
+    "trialCta": "Đăng ký tư vấn"
+  },
+
+  "releaseNotes": {
+    "_note": "Past tense, benefit-led, no superlatives.",
+    "heading": "Có gì mới",
+    "fixed": "Đã sửa một số lỗi và cải thiện tốc độ.",
+    "added": "Đã thêm chế độ tối.",
+    "improved": "Đã cải thiện tốc độ tải danh sách."
+  }
+}
