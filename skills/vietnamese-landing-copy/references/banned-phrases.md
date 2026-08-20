@@ -100,7 +100,7 @@ actual document. It suppresses the warning; it does not create the proof.
 | `không ai sánh bằng` | "second to none" | Same |
 | `top\s*1\b` | "top 1" | Common Vietnamese-market phrasing |
 | `\bno\.?\s*1\b` | "No.1" | Foreign equivalent, explicitly covered |
-| `#\s*1\b` | "#1" | Foreign equivalent |
+| `(?<!#)#\s*1\b` | "#1" | Foreign equivalent. The lookbehind spares Markdown headings — `## 1.` is not a superlative claim |
 | `\bnumber\s+one\b` | "number one" | Foreign equivalent |
 | `\bbest\s+in\b` | "best in ..." | Foreign equivalent |
 

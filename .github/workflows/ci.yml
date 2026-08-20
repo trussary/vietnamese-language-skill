@@ -40,22 +40,39 @@ jobs:
         with:
           python-version: "3.12"
 
-      # references/examples.md is generated from evals/pairs.jsonl. If someone edited it
-      # by hand, the corpus and the docs have diverged.
+      # Four references and the validator engine have one source of truth in shared/ and
+      # are copied into every skill. Editing a copy instead of the source is the drift
+      # this check exists to make impossible.
+      - name: Generated copies match shared/
+        run: python tools/sync_shared.py --check
+
+      # Each references/examples.md is generated from that skill's evals/<name>/pairs.jsonl.
+      # If someone edited it by hand, the corpus and the docs have diverged.
       - name: examples.md is in sync with the corpus
         run: python tools/build_examples.py --check
 
-      # The skill's own documentation must pass the skill's own linter. This is what
+      # Every skill's documentation must pass that skill's own linter. This is what
       # catches an aspirational rule that nobody, including us, actually follows.
-      - name: Lint the skill with its own validator
+      - name: Lint each skill with its own validator
         run: |
-          python skills/vietnamese-landing-copy/scripts/validate_copy.py \
-            skills/vietnamese-landing-copy/ --ext .md,.json,.template
+          status=0
+          for skill in skills/*/; do
+            echo "::group::lint ${skill}"
+            python "${skill}scripts/validate_copy.py" "${skill}" \
+              --ext .md,.json,.template || status=1
+            echo "::endgroup::"
+          done
+          exit $status
 
-      - name: Font coverage of the shipped template
+      - name: Font coverage of every shipped template
         run: |
-          python skills/vietnamese-landing-copy/scripts/check_font_coverage.py \
-            skills/vietnamese-landing-copy/assets/vi.json.template
+          status=0
+          for template in skills/*/assets/*; do
+            [ -e "$template" ] || continue
+            skill=$(dirname "$(dirname "$template")")
+            python "${skill}/scripts/check_font_coverage.py" "$template" || status=1
+          done
+          exit $status
 
       # The body is a router; detail belongs in references/. Past ~500 lines the
       # progressive-disclosure budget is blown.
@@ -76,12 +93,52 @@ jobs:
           sys.exit(1 if failed else 0)
           PY
 
-      - name: Manifests are valid JSON
+      - name: Manifests and templates are valid JSON
         run: |
-          python -c "import json,sys;[json.load(open(f,encoding='utf-8')) for f in sys.argv[1:]]" \
-            .claude-plugin/plugin.json \
-            .claude-plugin/marketplace.json \
-            skills/vietnamese-landing-copy/assets/vi.json.template
+          python - <<'PY'
+          import json, pathlib, sys
+          paths = [pathlib.Path(".claude-plugin/plugin.json"),
+                   pathlib.Path(".claude-plugin/marketplace.json")]
+          # Only JSON assets. A skill may also ship a Markdown template
+          # (bao-gia.md.template), which is not JSON and must not be parsed as such.
+          paths += sorted(pathlib.Path("skills").glob("*/assets/*.json"))
+          paths += sorted(pathlib.Path("skills").glob("*/assets/*.json.template"))
+          failed = False
+          for path in paths:
+              try:
+                  json.loads(path.read_text(encoding="utf-8"))
+                  print(f"ok   {path}")
+              except Exception as exc:
+                  print(f"::error file={path}::invalid JSON: {exc}")
+                  failed = True
+          sys.exit(1 if failed else 0)
+          PY
+
+      # Every eval corpus must be valid JSONL with unique ids across the whole repo.
+      - name: Eval corpora parse
+        run: |
+          python - <<'PY'
+          import json, pathlib, sys
+          seen, failed = {}, False
+          for path in sorted(pathlib.Path("evals").glob("*/pairs.jsonl")):
+              for lineno, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+                  if not line.strip():
+                      continue
+                  try:
+                      pair = json.loads(line)
+                  except json.JSONDecodeError as exc:
+                      print(f"::error file={path},line={lineno}::{exc}")
+                      failed = True
+                      continue
+                  if pair["id"] in seen:
+                      print(f"::error file={path},line={lineno}::"
+                            f"duplicate id {pair['id']} (also in {seen[pair['id']]})")
+                      failed = True
+                  seen[pair["id"]] = path
+              print(f"ok   {path}")
+          print(f"{len(seen)} pair(s) across the repo")
+          sys.exit(1 if failed else 0)
+          PY
 
   spec:
     name: agent skill spec
@@ -103,7 +160,12 @@ jobs:
 
       # `npx skills add` is the primary documented install path. If the CLI stops
       # discovering the skill in this repo layout, that install path is silently broken.
-      - name: skills CLI can discover the skill
+      - name: skills CLI can discover every skill
         run: |
           npx --yes skills add . --list | tee /tmp/skills-list.txt
-          grep -q "vietnamese-landing-copy" /tmp/skills-list.txt
+          status=0
+          for skill in skills/*/; do
+            name=$(basename "$skill")
+            grep -q "$name" /tmp/skills-list.txt || { echo "::error::$name not discovered"; status=1; }
+          done
+          exit $status

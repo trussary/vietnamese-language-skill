@@ -7,7 +7,7 @@ meaningfully — the blocklists are Markdown tables that the validator reads at 
 ## The review bar
 
 **A native Vietnamese speaker must approve any change to `references/glossary.md`,
-`references/examples.md`, or `evals/pairs.jsonl`.** Shipping wrong Vietnamese in a skill whose
+`references/examples.md`, or an `evals/<skill>/pairs.jsonl`.** Shipping wrong Vietnamese in a skill whose
 entire purpose is to stop wrong Vietnamese is the one failure we cannot recover from. If you
 are not a native speaker, open the PR anyway and say so — a reviewer will be found.
 
@@ -64,7 +64,7 @@ case automatically; only a good example catches the second.
 
 ## Add an examples pair
 
-`references/examples.md` is **generated**. Edit [`evals/pairs.jsonl`](evals/pairs.jsonl)
+`references/examples.md` is **generated**. Edit the skill's `evals/<skill>/pairs.jsonl`
 instead, one JSON object per line:
 
 ```json
@@ -122,6 +122,46 @@ issue with:
 - the vocabulary that distinguishes it from the profiles we already have.
 
 Then add it to `references/register-guide.md` and to `REGISTERS` in `validate_copy.py`.
+
+## Edit a shared reference
+
+Four references and the validator engine are shared by every skill. They have one source of
+truth in `shared/` and are **copied** into each skill by a build step, because a skill folder
+has to be self-contained — `npx skills use`, the Claude.ai zip upload, and a plain `cp -r` all
+install exactly one folder.
+
+```
+shared/references/register-matrix.md     -> skills/*/references/register-matrix.md
+shared/references/unicode-and-tone.md    -> skills/*/references/unicode-and-tone.md
+shared/references/locale-formatting.md   -> skills/*/references/locale-formatting.md
+shared/references/compliance.md          -> skills/*/references/compliance.md
+shared/scripts/validate_copy.py          -> skills/*/scripts/validate_copy.py
+```
+
+**Edit the file under `shared/`, never the copy.** Then:
+
+```bash
+python tools/sync_shared.py
+```
+
+Every generated file says `GENERATED FILE` on its first line, and CI fails if a copy has
+drifted from its source. If you find yourself wanting to change a shared file for one skill
+only, it is not a shared file — move the section into that skill's own reference instead.
+
+## Add a rule that needs real logic
+
+Most lint rules are a Markdown table row: add it to `glossary.md` or `banned-phrases.md` and
+you are done. Rules that need to count characters, parse numbers, or look at more than one
+line go in the skill's own `scripts/rules_<domain>.py`, which the engine imports automatically.
+Such a module may export:
+
+- `RULE_DOCS` — `{"XXX001": "what it catches"}`, merged into the global rule table;
+- `DOCTYPES` — `{"commit": "help text"}`, the `--doctype` values it understands;
+- `check_line(ctx, lineno, raw, masked)` — yields `(rule, severity, col, snippet, message, hint)`;
+- `check_document(ctx)` — yields the same with a leading `lineno`.
+
+A rule that only makes sense for one artifact type **must** be gated on `ctx.doctype`. A rule
+that fires on every document it was never meant for gets the whole linter disabled.
 
 ## Things we will not merge
 

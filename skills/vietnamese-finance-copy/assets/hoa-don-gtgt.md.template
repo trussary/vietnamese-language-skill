@@ -1,0 +1,56 @@
+<!-- Hóa đơn GTGT template. Replace every [bracket].
+     Validate: python scripts/validate_copy.py hoa-don.md --doctype e-invoice --register finance-formal
+
+     WARNING: the field labels below are the conventional forms in current use. They are
+     NOT verified statutory strings. Before using this for real filing, check every label
+     against Nghị định 123/2020/NĐ-CP as amended by Nghị định 70/2025/NĐ-CP. A mislabelled
+     mandatory field is a rejected invoice. -->
+
+# HÓA ĐƠN GIÁ TRỊ GIA TĂNG
+
+**Ký hiệu:** [1C26TAA]  ·  **Số:** [00000123]  ·  **Ngày:** [dd/MM/yyyy]
+**Mã của cơ quan thuế:** [nếu thuộc diện có mã]
+
+## Đơn vị bán hàng
+
+- Tên đơn vị: [Công ty Cổ phần ABC]
+- **MST:** [0123456789]
+- Địa chỉ: [số nhà, đường, phường, quận, tỉnh/thành phố]
+- Điện thoại: [0xxx xxx xxx]  ·  Số tài khoản: [số TK — ngân hàng]
+
+## Đơn vị mua hàng
+
+- Họ tên người mua hàng: [Họ và tên]
+- Tên đơn vị: [Công ty TNHH XYZ]
+- **MST người mua:** [9876543210]
+- Địa chỉ: [số nhà, đường, phường, quận, tỉnh/thành phố]
+- Hình thức thanh toán: [Chuyển khoản / Tiền mặt]
+
+## Chi tiết hàng hóa, dịch vụ
+
+Đơn vị tính: VND
+
+| STT | Tên hàng hóa, dịch vụ | Đơn vị tính | Số lượng | Đơn giá | Thành tiền |
+|---|---|---|---|---|---|
+| 1 | [Tên hàng hóa/dịch vụ] | [cái/gói] | [10] | [250.000] | [2.500.000] |
+| 2 | [Tên hàng hóa/dịch vụ] | [gói] | [1] | [5.000.000] | [5.000.000] |
+
+| | |
+|---|---|
+| Cộng tiền hàng | [7.500.000] |
+| **Thuế suất GTGT** | [10%] |
+| **Tiền thuế GTGT** | [750.000] |
+| **Tổng cộng tiền thanh toán** | **[8.250.000]** |
+
+**Số tiền viết bằng chữ:** [Tám triệu hai trăm năm mươi nghìn đồng] ./.
+
+---
+
+*Người mua hàng và người bán hàng ký số theo quy định.*
+
+<!-- Reminders, not part of the invoice:
+     - Group digits with periods (8.250.000). The US comma grouping is a
+       factor-of-a-thousand ambiguity in a Vietnamese finance document.
+     - Write any negative adjustment line in parentheses: (750.000).
+     - Every table needs its Đơn vị tính header.
+     - Register is Quý khách or impersonal third person throughout. -->
