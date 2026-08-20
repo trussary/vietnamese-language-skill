@@ -5,22 +5,35 @@
     "url": "https://github.com/trussary"
   },
   "metadata": {
-    "description": "Vietnamese (vi-VN) language Agent Skills for Claude Code.",
-    "version": "1.0.0"
+    "description": "Vietnamese (vi-VN) language Agent Skills for Claude Code: landing pages, engineering and product docs, marketing and sales, and regulated finance copy.",
+    "version": "2.0.0"
   },
   "plugins": [
     {
       "name": "vietnamese-language-skill",
       "source": "./",
-      "description": "Native-quality Vietnamese landing-page copy: register and pronoun selection, conventional CTAs, VND and date formatting, advertising-law compliance, and a dependency-free copy linter.",
-      "version": "1.0.0",
+      "description": "Four Vietnamese writing skills that share one linter: native-quality landing-page copy, engineering and product documentation, marketing and sales communications, and regulated finance content. Register and pronoun selection, code-switching, locale formatting, advertising and financial-promotion law, and a dependency-free validator.",
+      "version": "2.0.0",
       "author": {
         "name": "vietnamese-language-skill contributors"
       },
       "homepage": "https://github.com/trussary/vietnamese-language-skill",
       "license": "MIT",
       "category": "writing",
-      "keywords": ["vietnamese", "localization", "i18n", "copywriting", "landing-page"]
+      "keywords": [
+        "vietnamese",
+        "vi-VN",
+        "localization",
+        "i18n",
+        "copywriting",
+        "landing-page",
+        "technical-writing",
+        "marketing",
+        "sales",
+        "finance",
+        "compliance",
+        "linter"
+      ]
     }
   ]
 }

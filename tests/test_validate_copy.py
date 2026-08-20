@@ -266,6 +266,17 @@ def test_quy_does_not_trigger_tone_rule(tmp_path, skill):
     assert "TONE001" not in rules_of(skill.run(tmp_path, "Quý khách và quỹ đầu tư"))
 
 
+def test_title_case_quy_is_not_a_tone_style(tmp_path, skill):
+    """`qu` is a digraph, so Quý carries no tone-mark ambiguity in either case.
+
+    The guard used to exclude only lowercase `q`, so any document containing both
+    "Hóa" and "Quý khách" — which is most Vietnamese commercial writing — was
+    reported as mixing the two conventions.
+    """
+    assert "TONE001" not in rules_of(skill.run(tmp_path, "Hóa đơn gửi Quý khách"))
+    assert "TONE001" not in rules_of(skill.run(tmp_path, "Hoà đơn gửi Quý khách"))
+
+
 def test_icu_rejects_every_non_other_category(tmp_path, skill):
     for category in ("one", "few", "many", "zero", "two"):
         text = '{"n": "{count, plural, %s {# tệp} other {# tệp}}"}' % category

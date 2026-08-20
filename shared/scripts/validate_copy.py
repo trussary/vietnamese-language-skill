@@ -323,9 +323,9 @@ DIACRITIC_RE = re.compile(
 # Open-syllable oa/oe/uy: the only place the two tone-mark conventions differ.
 VN_LETTER = r"a-zA-ZÀ-ỹ"
 TONE_OLD_RE = re.compile(rf"(?<![{VN_LETTER}])[{VN_LETTER}]*[òóỏõọ][ae](?![{VN_LETTER}])")
-TONE_OLD_UY_RE = re.compile(rf"(?<![{VN_LETTER}])[{VN_LETTER}]*(?<!q)[ùúủũụ]y(?![{VN_LETTER}])")
+TONE_OLD_UY_RE = re.compile(rf"(?<![{VN_LETTER}])[{VN_LETTER}]*(?<![qQ])[ùúủũụ]y(?![{VN_LETTER}])")
 TONE_NEW_RE = re.compile(rf"(?<![{VN_LETTER}])[{VN_LETTER}]*o[àáảãạèéẻẽẹ](?![{VN_LETTER}])")
-TONE_NEW_UY_RE = re.compile(rf"(?<![{VN_LETTER}])[{VN_LETTER}]*(?<!q)u[ỳýỷỹỵ](?![{VN_LETTER}])")
+TONE_NEW_UY_RE = re.compile(rf"(?<![{VN_LETTER}])[{VN_LETTER}]*(?<![qQ])u[ỳýỷỹỵ](?![{VN_LETTER}])")
 
 NUM_COMMA_GROUP_RE = re.compile(r"(?<![\d.,])\d{1,3}(?:,\d{3})+(?![\d,])")
 NUM_UNGROUPED_RE = re.compile(r"(?<![\d.,])(\d{5,})(?![\d.,])\s*(VND|vnd|₫|đồng)")

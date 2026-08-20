@@ -137,6 +137,45 @@ regulated financial promotion in substance, and it must go to the finance skill.
 
 ---
 
+# `vietnamese-finance-copy`
+
+## Should trigger (10)
+
+| # | Prompt | Why it should |
+|---|---|---|
+| 1 | Lập hóa đơn GTGT tiếng Việt cho khách doanh nghiệp | Core case: e-invoice fields |
+| 2 | Dịch báo cáo tài chính sang tiếng Việt | Statement terminology under TT 99/2025 |
+| 3 | What is the balance sheet called in Vietnamese in 2026? | The TT 99/2025 rename |
+| 4 | Can we advertise a guaranteed 12% annual return in Vietnam? | Guaranteed-return prohibition |
+| 5 | Viết copy cho sản phẩm vay trả góp lãi suất 0% | Interest-rate transparency |
+| 6 | Write Vietnamese copy for our investment-linked insurance product | TT 67/2023 disclosure duties |
+| 7 | Format this Vietnamese P&L table — units and negatives | Statement formatting conventions |
+| 8 | Soạn thông báo thuế TNCN gửi nhân viên | Tax terminology and abbreviations |
+| 9 | Is it legal to promote a crypto exchange to Vietnamese users? | NQ 05/2025 pilot and licensing |
+| 10 | Viết bản công bố thông tin cho quỹ đầu tư | Disclosure document, no solicitation content |
+
+## Should NOT trigger (10)
+
+| # | Prompt | Why it should not |
+|---|---|---|
+| 11 | Viết landing page cho dự án căn hộ tại Quận 7 | `vietnamese-landing-copy`, even though property involves money |
+| 12 | Làm báo giá gửi khách hàng | `vietnamese-business-comms` owns quotes |
+| 13 | Write a Vietnamese commit message | `vietnamese-tech-writing` |
+| 14 | Viết email khuyến mãi giảm 30% | Campaign copy — business-comms |
+| 15 | Create a VAT invoice | No Vietnamese in scope |
+| 16 | What is the corporate tax rate in Vietnam? | A tax-rate question, not a writing task |
+| 17 | Explain how VAT works | Explanatory, not authoring |
+| 18 | Build me a spreadsheet model | Modelling, not copy |
+| 19 | Summarize this Vietnamese annual report | Reading comprehension, not authoring |
+| 20 | Review my Python code for bugs | Unrelated |
+
+Prompts 12 and 14 are the sharpest routing tests in the repo. A quote and a promotional email
+both contain money and VAT, and both belong to `vietnamese-business-comms`. The dividing line
+is that this skill owns **regulated financial content** — statements, invoices, and financial
+promotion — not every document with a price in it.
+
+---
+
 ## Results log
 
 | Date | Skill | Version | Score | Notes |
@@ -144,3 +183,4 @@ regulated financial promotion in substance, and it must go to the finance skill.
 | _not yet run_ | vietnamese-landing-copy | 1.0.0 | — | Run before tagging a release |
 | _not yet run_ | vietnamese-tech-writing | 1.0.0 | — | Run before tagging a release |
 | _not yet run_ | vietnamese-business-comms | 1.0.0 | — | Run before tagging a release |
+| _not yet run_ | vietnamese-finance-copy | 1.0.0 | — | Run before tagging a release |
