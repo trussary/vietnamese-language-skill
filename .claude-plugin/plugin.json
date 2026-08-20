@@ -1,0 +1,16 @@
+{
+  "name": "vietnamese-language-skill",
+  "version": "1.0.0",
+  "description": "Agent Skills for native-quality Vietnamese (vi-VN) writing. Fixes translationese, wrong register, calqued CTAs, illegal ad superlatives, and broken VND/date/Unicode formatting, with a dependency-free validator.",
+  "author": {
+    "name": "vietnamese-language-skill contributors",
+    "url": "https://github.com/trussary/vietnamese-language-skill"
+  },
+  "homepage": "https://github.com/trussary/vietnamese-language-skill",
+  "repository": "https://github.com/trussary/vietnamese-language-skill",
+  "license": "MIT",
+  "keywords": [
+    "vietnamese", "vi-VN", "localization", "i18n", "copywriting",
+    "landing-page", "bat-dong-san", "real-estate", "translation", "linter"
+  ]
+}

@@ -1,0 +1,186 @@
+{
+  "_README": [
+    "next-intl / i18next message template for vi-VN. Copy the branch you need to the root of",
+    "your own vi.json and delete the other one. Two branches are shown side by side so the",
+    "register contrast is visible; a real file carries exactly ONE register throughout.",
+    "Keys are grouped by page section so a reviewer can scan register consistency in one pass.",
+    "Vietnamese has no grammatical plural: ICU messages use only the 'other' category.",
+    "Delete this _README key before shipping."
+  ],
+
+  "_lint": "vlc-disable: DIA001, PRO001",
+  "_lintWhy": [
+    "DIA001: meta.keywordsUnaccented and meta.slug are unaccented on purpose — Vietnamese",
+    "users search without diacritics, so meta and slugs carry the unaccented form while body",
+    "copy never does. PRO001: this template deliberately shows both registers side by side.",
+    "Your own vi.json should carry neither suppression."
+  ],
+
+  "realEstate": {
+    "_register": "quý khách — Hán-Việt heavy, ornate, prestige-signalling",
+
+    "meta": {
+      "title": "Căn hộ cao cấp The Origami — Quận 9, TP. Hồ Chí Minh",
+      "description": "Dự án căn hộ cao cấp tại Quận 9. Bàn giao quý IV/2027, pháp lý hoàn thiện. Đăng ký nhận báo giá và chính sách ưu đãi.",
+      "keywordsAccented": "căn hộ cao cấp quận 9, dự án the origami, giá căn hộ quận 9",
+      "keywordsUnaccented": "can ho cao cap quan 9, du an the origami, gia can ho quan 9",
+      "slug": "can-ho-the-origami-quan-9",
+      "lang": "vi"
+    },
+
+    "hero": {
+      "eyebrow": "Chính thức mở bán giai đoạn 2",
+      "title": "Kiến tạo chốn an cư đẳng cấp giữa lòng thành phố",
+      "subtitle": "Không gian sống chuẩn resort, kết nối trọn vẹn tiện ích nội khu và cảnh quan ven sông.",
+      "priceFrom": "Chỉ từ 2,5 tỷ đồng",
+      "pricePerSqm": "35 triệu/m²",
+      "primaryCta": "Đăng ký nhận báo giá",
+      "secondaryCta": "Tìm hiểu thêm"
+    },
+
+    "sections": {
+      "overview": {
+        "title": "Tổng quan dự án",
+        "developerLabel": "Chủ đầu tư",
+        "scaleLabel": "Quy mô",
+        "scaleValue": "2 toà, 1.240 căn hộ",
+        "handoverLabel": "Thời gian bàn giao",
+        "handoverValue": "Quý IV/2027"
+      },
+      "highlights": { "title": "Điểm nổi bật" },
+      "location": {
+        "title": "Vị trí & Liên kết vùng",
+        "address": "Số 12, đường Nguyễn Huệ, phường Bến Nghé, Quận 1, TP. Hồ Chí Minh"
+      },
+      "amenities": {
+        "title": "Tiện ích",
+        "internal": "Tiện ích nội khu",
+        "external": "Tiện ích ngoại khu"
+      },
+      "floorPlans": {
+        "title": "Mặt bằng",
+        "downloadCta": "Tải mặt bằng chi tiết"
+      },
+      "modelUnit": { "title": "Thiết kế căn hộ mẫu" },
+      "progress": { "title": "Tiến độ xây dựng" },
+      "legal": {
+        "title": "Pháp lý",
+        "status": "Pháp lý hoàn thiện, sổ hồng riêng từng căn"
+      },
+      "policy": { "title": "Chính sách bán hàng" },
+      "developer": { "title": "Chủ đầu tư" },
+      "faq": { "title": "Câu hỏi thường gặp" }
+    },
+
+    "leadForm": {
+      "title": "Đăng ký nhận thông tin dự án",
+      "subtitle": "Quý khách vui lòng để lại thông tin, chuyên viên sẽ liên hệ tư vấn trong 24 giờ.",
+      "fields": {
+        "name": "Họ và tên",
+        "phone": "Số điện thoại",
+        "email": "Địa chỉ email",
+        "unitType": "Loại căn quan tâm",
+        "message": "Nội dung"
+      },
+      "consentLabel": "Tôi đồng ý để Chủ đầu tư liên hệ tư vấn về dự án và xử lý thông tin cá nhân của tôi theo Chính sách bảo mật. Tôi có thể rút lại sự đồng ý bất cứ lúc nào.",
+      "privacyLinkText": "Chính sách bảo mật",
+      "submit": "Đăng ký nhận tư vấn",
+      "success": "Cảm ơn quý khách. Chuyên viên sẽ liên hệ trong thời gian sớm nhất.",
+      "error": "Gửi thông tin chưa thành công. Quý khách vui lòng thử lại."
+    },
+
+    "scarcity": {
+      "limited": "Số lượng có hạn",
+      "openingOffer": "Ưu đãi mở bán",
+      "reserve": "Đăng ký giữ chỗ"
+    },
+
+    "disclaimers": {
+      "renders": "Hình ảnh mang tính chất minh hoạ",
+      "changes": "Thông tin có thể thay đổi mà không cần báo trước",
+      "notAnOffer": "Nội dung trên website không cấu thành đề nghị giao kết hợp đồng",
+      "priceExcludes": "Giá chưa bao gồm VAT và phí bảo trì"
+    },
+
+    "counts": {
+      "units": "{count, plural, other {# căn hộ}}",
+      "towers": "{count, plural, other {# toà}}",
+      "note": "Only the 'other' branch exists in Vietnamese. Simple interpolation with a classifier — '{count} căn hộ' — is usually better than a plural block at all."
+    },
+
+    "footer": {
+      "companyLabel": "Tên công ty",
+      "taxIdLabel": "Mã số doanh nghiệp",
+      "addressLabel": "Địa chỉ trụ sở chính",
+      "hotlineLabel": "Hotline",
+      "hotline": "0912 345 678",
+      "hotlineIntl": "+84 912 345 678"
+    }
+  },
+
+  "saas": {
+    "_register": "bạn — thuần Việt, short declarative sentences, benefit-first",
+
+    "meta": {
+      "title": "Quản lý công việc nhóm đơn giản hơn",
+      "description": "Nền tảng quản lý công việc cho đội nhóm Việt Nam. Dùng thử miễn phí 14 ngày, không cần thẻ tín dụng.",
+      "slug": "quan-ly-cong-viec-nhom",
+      "lang": "vi"
+    },
+
+    "hero": {
+      "title": "Quản lý công việc nhóm đơn giản hơn",
+      "subtitle": "Giao việc, theo dõi tiến độ và báo cáo trong cùng một nơi. Nhanh hơn 3 lần so với quy trình thủ công.",
+      "primaryCta": "Dùng thử miễn phí",
+      "secondaryCta": "Đặt lịch demo",
+      "noCreditCard": "Không cần thẻ tín dụng"
+    },
+
+    "sections": {
+      "features": { "title": "Tính năng" },
+      "pricing": { "title": "Bảng giá" },
+      "customers": { "title": "Cảm nhận khách hàng" },
+      "trustedBy": { "title": "Được tin dùng bởi" },
+      "faq": { "title": "Câu hỏi thường gặp" }
+    },
+
+    "pricing": {
+      "monthlySuffix": "/tháng",
+      "starter": "299.000 ₫",
+      "growth": "899.000 ₫",
+      "enterprise": "Liên hệ",
+      "vatNote": "Giá chưa bao gồm VAT"
+    },
+
+    "leadForm": {
+      "title": "Bắt đầu ngay",
+      "fields": {
+        "name": "Họ và tên",
+        "email": "Địa chỉ email",
+        "company": "Tên công ty"
+      },
+      "consentLabel": "Tôi đồng ý nhận thông tin sản phẩm và đồng ý với Chính sách bảo mật.",
+      "marketingConsentLabel": "Tôi muốn nhận bản tin hàng tháng (tuỳ chọn)",
+      "submit": "Đăng ký miễn phí",
+      "success": "Cảm ơn. Kiểm tra hộp thư để kích hoạt tài khoản.",
+      "error": "Gửi thông tin chưa thành công. Vui lòng thử lại."
+    },
+
+    "counts": {
+      "seats": "{count, plural, other {# thành viên}}",
+      "projects": "{count, plural, other {# dự án}}"
+    },
+
+    "ui": {
+      "loading": "Đang tải...",
+      "search": "Tìm kiếm",
+      "submit": "Gửi",
+      "backToTop": "Về đầu trang",
+      "readMore": "Đọc tiếp",
+      "viewDetails": "Xem chi tiết",
+      "contact": "Liên hệ",
+      "login": "Đăng nhập",
+      "logout": "Đăng xuất"
+    }
+  }
+}

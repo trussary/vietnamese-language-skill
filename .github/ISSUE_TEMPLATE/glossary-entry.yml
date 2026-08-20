@@ -1,0 +1,82 @@
+name: Glossary entry
+description: Propose a new EN to VI term, or correct an existing one
+title: "glossary: "
+labels: ["glossary", "needs-native-review"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks — glossary rows are the highest-leverage contribution to this project.
+
+        Before filing: the ❌ phrase becomes a lint rule. It must **not** be a substring of
+        ordinary Vietnamese, or of the ✅ phrase we recommend. `Thử miễn phí` fails that test
+        because it sits inside `Dùng thử miễn phí`.
+
+  - type: input
+    id: english
+    attributes:
+      label: English term
+      placeholder: Get a quote
+    validations:
+      required: true
+
+  - type: input
+    id: bad
+    attributes:
+      label: ❌ Calque to block
+      description: The wrong Vietnamese an LLM produces. Leave blank if there is no common bad form.
+      placeholder: Lấy báo giá
+
+  - type: input
+    id: good
+    attributes:
+      label: ✅ Native Vietnamese
+      description: Separate alternatives with a forward slash.
+      placeholder: Nhận báo giá / Nhận bảng giá
+    validations:
+      required: true
+
+  - type: dropdown
+    id: register
+    attributes:
+      label: Register
+      options:
+        - universal
+        - re (real estate, finance, luxury)
+        - saas (tech, e-commerce)
+        - legal
+        - formal (institutional)
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: >
+        Links to live Vietnamese sites using the ✅ form, or an explanation of why the ❌ form
+        is wrong. This is what a reviewer checks.
+      placeholder: |
+        - https://example.vn/du-an — uses "Nhận báo giá" on the lead form
+        - "Lấy" is physical taking; a quote is received, not taken
+    validations:
+      required: true
+
+  - type: textarea
+    id: no-false-positive
+    attributes:
+      label: Does the ❌ phrase appear in correct Vietnamese?
+      description: >
+        Think of a sentence where the ❌ phrase is legitimate. If you can, the entry is too
+        broad and should be dropped or narrowed.
+      placeholder: I could not construct one. / Yes — "nộp hồ sơ" is correct, so this should be a warning only.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: speaker
+    attributes:
+      label: Native speaker
+      options:
+        - label: I am a native Vietnamese speaker
+        - label: I am not, and this needs native review before merging
