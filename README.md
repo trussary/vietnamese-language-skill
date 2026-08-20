@@ -7,12 +7,13 @@ translationese: English word order in Vietnamese words, the wrong pronoun for th
 CTAs translated literally, advertising superlatives that are **illegal under Vietnamese law**,
 and currency formatted the American way.
 
+The left column is not a strawman. It is what you get by default — one example per skill:
+
+`vietnamese-landing-copy`
+
 ```diff
 - Học thêm về dự án của chúng tôi
 + Tìm hiểu thêm về dự án
-
-- Được thiết kế bởi các kiến trúc sư hàng đầu
-+ Do đội ngũ kiến trúc sư danh tiếng kiến tạo
 
 - Chúng tôi cung cấp những căn hộ tốt nhất số 1 thị trường
 + Không gian sống đẳng cấp giữa lòng thành phố
@@ -21,7 +22,44 @@ and currency formatted the American way.
 + Giá chỉ từ 2,5 tỷ đồng
 ```
 
-The left column is not a strawman. It is what you get by default.
+`vietnamese-tech-writing`
+
+```diff
+- cam kết các thay đổi
++ commit các thay đổi
+
+- triển khai đến sản xuất
++ deploy lên production
+
+- Bạn sẽ thử lại request khi gặp lỗi.
++ Hệ thống sẽ tự động retry request khi gặp lỗi.
+```
+
+`vietnamese-business-comms`
+
+```diff
+- Cà phê số 1 Việt Nam
++ Cà phê được hơn 10.000 khách hàng lựa chọn mỗi ngày
+
+- Học thêm
++ Xem ngay
+
+- Đơn hàng đã xác nhận. Ưu đãi giảm 50% hôm nay, đặt ngay!
++ Đơn hàng của Quý khách đã được xác nhận. Dự kiến giao trước 20/08.
+```
+
+`vietnamese-finance-copy`
+
+```diff
+- Cam kết lợi nhuận 12%/năm cho nhà đầu tư
++ Lợi nhuận kỳ vọng 12%/năm. Đầu tư có rủi ro; kết quả trong quá khứ không đảm bảo kết quả trong tương lai.
+
+- Trả góp lãi suất 0% cho mọi đơn hàng
++ Trả góp lãi suất 0% — phí chuyển đổi 3%/khoản. Tổng chi phí phải trả: 10.300.000 ₫.
+
+- Bảng cân đối kế toán tại ngày 31/12/2026
++ Báo cáo tình hình tài chính tại ngày 31/12/2026
+```
 
 ## What is in here
 
