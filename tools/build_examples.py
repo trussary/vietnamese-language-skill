@@ -112,7 +112,9 @@ def main() -> int:
         print("examples.md is up to date")
         return 0
 
-    EXAMPLES.write_text(content, encoding="utf-8", newline="\n")
+    # Path.write_text(newline=...) is 3.10+; Path.open keeps this working on 3.9.
+    with EXAMPLES.open("w", encoding="utf-8", newline="\n") as handle:
+        handle.write(content)
     print(f"wrote {EXAMPLES.relative_to(ROOT)}")
     return 0
 

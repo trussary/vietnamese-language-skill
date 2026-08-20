@@ -138,8 +138,11 @@ def test_scripts_are_stdlib_only(skill):
     scripts = skill["dir"] / "scripts"
     if not scripts.is_dir():
         pytest.skip("no scripts/")
+    import sys
+    if not hasattr(sys, "stdlib_module_names"):     # 3.10+; nothing to compare against
+        pytest.skip("sys.stdlib_module_names requires Python 3.10+")
     third_party = re.compile(r"^\s*(?:import|from)\s+(?!__future__)([a-zA-Z0-9_]+)", re.M)
-    stdlib = set(getattr(__import__("sys"), "stdlib_module_names", ()))
+    stdlib = set(sys.stdlib_module_names)
     for path in scripts.glob("*.py"):
         for module in set(third_party.findall(path.read_text(encoding="utf-8"))):
             assert module in stdlib, (

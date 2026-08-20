@@ -46,7 +46,8 @@ PAIRS_DATA = load_pairs()
 
 def run(tmp_path, text, filename="sample.md", register=None):
     path = tmp_path / filename
-    path.write_text(text, encoding="utf-8", newline="")
+    with path.open("w", encoding="utf-8", newline="") as handle:
+        handle.write(text)
     validator = V.Validator(BLOCKLISTS, register)
     return validator.check_file(path)
 

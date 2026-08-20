@@ -486,7 +486,9 @@ def fix_nfc(path: pathlib.Path) -> bool:
     normalized = unicodedata.normalize("NFC", text)
     if normalized == text:
         return False
-    path.write_text(normalized, encoding="utf-8", newline="")
+    # Path.write_text(newline=...) is 3.10+; Path.open keeps this working on 3.9.
+    with path.open("w", encoding="utf-8", newline="") as handle:
+        handle.write(normalized)
     return True
 
 
