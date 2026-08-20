@@ -99,8 +99,10 @@ jobs:
           import json, pathlib, sys
           paths = [pathlib.Path(".claude-plugin/plugin.json"),
                    pathlib.Path(".claude-plugin/marketplace.json")]
+          # Only JSON assets. A skill may also ship a Markdown template
+          # (bao-gia.md.template), which is not JSON and must not be parsed as such.
           paths += sorted(pathlib.Path("skills").glob("*/assets/*.json"))
-          paths += sorted(pathlib.Path("skills").glob("*/assets/*.template"))
+          paths += sorted(pathlib.Path("skills").glob("*/assets/*.json.template"))
           failed = False
           for path in paths:
               try:
