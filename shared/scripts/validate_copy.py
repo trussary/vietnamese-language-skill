@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# GENERATED FILE — do not edit. Source: shared/scripts/validate_copy.py (sha256 f033b9da801f9486).
-# Edit the source and run `python tools/sync_shared.py`.
 """Lint Vietnamese (vi-VN) copy for the defects LLMs reliably produce.
 
 Standard library only, Python 3.9+. No install step — that is deliberate: a skill

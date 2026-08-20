@@ -162,7 +162,8 @@ A native Vietnamese speaker must approve any change to the glossary or the examp
 
 ```bash
 python -m pytest tests/ -q                # 100+ assertions, mostly the eval corpus
-python tools/build_examples.py            # regenerate examples.md from evals/pairs.jsonl
+python tools/build_examples.py            # regenerate examples.md from evals/<skill>/pairs.jsonl
+python tools/sync_shared.py               # copy shared/ into every skill
 ```
 
 ## Background

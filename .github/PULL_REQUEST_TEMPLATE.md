@@ -5,7 +5,7 @@
 ## Type
 
 - [ ] Glossary / terminology
-- [ ] Examples corpus (`evals/pairs.jsonl`)
+- [ ] Examples corpus (`evals/<skill>/pairs.jsonl`)
 - [ ] Banned phrases or superlative patterns
 - [ ] Register guide or a new register profile
 - [ ] Locale formatting or legal reference
@@ -15,7 +15,8 @@
 ## Checks
 
 - [ ] `python -m pytest tests/ -q` passes
-- [ ] `python tools/build_examples.py` run if `evals/pairs.jsonl` changed
+- [ ] `python tools/build_examples.py` run if any `evals/<skill>/pairs.jsonl` changed
+- [ ] `python tools/sync_shared.py` run if anything under `shared/` changed
       (`examples.md` is generated — never edit it by hand)
 - [ ] `python skills/vietnamese-landing-copy/scripts/validate_copy.py skills/vietnamese-landing-copy/ --ext .md,.json,.template` is clean
 
@@ -24,7 +25,7 @@
 - [ ] The blocked phrase is **not** a substring of the phrase we recommend instead
 - [ ] The blocked phrase is **not** ordinary Vietnamese in some other context —
       or it is, and the entry is a warning rather than an error
-- [ ] I added a `good` example to `evals/pairs.jsonl` proving it does not misfire
+- [ ] I added a `good` example to the skill's `evals/<skill>/pairs.jsonl` proving it does not misfire
 
 ## If this adds a legal or formatting rule
 
@@ -32,7 +33,7 @@
 
 ## Native speaker review
 
-Changes to `glossary.md`, `examples.md`, or `evals/pairs.jsonl` require approval from a native
+Changes to `glossary.md`, `examples.md`, or any `evals/<skill>/pairs.jsonl` require approval from a native
 Vietnamese speaker before merge.
 
 - [ ] I am a native Vietnamese speaker

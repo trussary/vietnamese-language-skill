@@ -8,21 +8,14 @@ wrong pronoun does not read as slightly off — it reads as a different company.
 
 ## The pronoun matrix
 
-| Pronoun | Literal sense | Connotation | Use for | Avoid for |
-|---|---|---|---|---|
-| `quý khách` | esteemed customer | Deferential, commercial, warm-formal | Real estate, finance, insurance, airlines, hospitality, luxury retail, healthcare | Developer tools, youth brands — reads stiff and salesy |
-| `quý vị` | esteemed persons | Very formal, plural, broadcast | Institutional pages, government, conference and event announcements, press | Anything transactional — reads like a podium speech |
-| `anh/chị` | elder brother / elder sister | Warm but respectful, one-to-one | Sales consulting, brokerage, local services, mid-market B2B, chat and email follow-up | Broad public headlines — presumes a relationship you do not have |
-| `bạn` | friend | Casual peer, modern | SaaS, tech, e-commerce, education, youth and lifestyle brands | Luxury or real estate — reads cheap and presumptuous |
-| `khách hàng` | the customer | Third-person noun, not direct address | Policy text, terms, descriptive prose, FAQ answers about process | Direct address — `Khách hàng hãy đăng ký` is wrong; say `Quý khách vui lòng đăng ký` |
+The matrix is shared by every skill in this repo and lives in
+[register-matrix.md](register-matrix.md) — pronouns, what each register forbids, self-reference,
+and the one-register-per-document rule. `validate_copy.py` parses it directly, so it is the
+source of truth rather than a summary.
 
-**Self-reference** pairs with it: `chúng tôi` (we, exclusive — the company) for all registers.
-Use `chúng ta` (we, inclusive) only when genuinely including the reader, which marketing copy
-rarely does. `Chúng tôi` is correct on a company page; `chúng ta` there is a common LLM error.
-
-**One register per page.** Mixing `quý khách` in the hero with `bạn` in the FAQ is the single
-most visible amateur tell. If different sections need different warmth, vary sentence length
-and vocabulary — not the pronoun.
+For landing pages the four that matter are `quý khách` (real estate, finance, luxury),
+`quý vị` (institutional), `anh/chị` (consulting, mid-market) and `bạn` (SaaS, e-commerce,
+youth). The rest of this file is what those registers *sound* like once chosen.
 
 ## The prestige axis: Hán-Việt vs thuần Việt
 

@@ -30,8 +30,10 @@ If the brief does not say, infer from the product. A căn hộ cao cấp page is
 A developer tool is `bạn`. **Never mix two registers in one page** — that is the single most
 visible amateur tell.
 
-Full pronoun matrix, the Hán-Việt vs thuần Việt prestige axis, classifiers, and the
-section-order house style: **[references/register-guide.md](references/register-guide.md)**
+Full pronoun matrix, including the registers the other Vietnamese skills use:
+**[references/register-matrix.md](references/register-matrix.md)**. The Hán-Việt vs thuần Việt
+prestige axis, classifiers, and the section-order house style:
+**[references/register-guide.md](references/register-guide.md)**
 
 ## Step 2 — Core rules (non-negotiable, no file hop needed)
 
@@ -69,7 +71,8 @@ or `+84`. Addresses run small-to-large. Slugs are unaccented, lowercase, hyphena
 
 **[references/locale-formatting.md](references/locale-formatting.md)** — also covers
 `Intl.NumberFormat('vi-VN')`, BCP-47 tags, font subsets and stacked-diacritic typography,
-and the accented/unaccented dual-keyword SEO rule.
+and the accented/unaccented dual-keyword SEO rule. The NFC and tone-mark rules behind points
+1 and 2 above are in **[references/unicode-and-tone.md](references/unicode-and-tone.md)**.
 
 ## Step 5 — Get the legal copy right
 
@@ -78,7 +81,9 @@ consent with a stated purpose and a linked `Chính sách bảo mật`. Advertisi
 require documented proof.
 
 **[references/legal-copy.md](references/legal-copy.md)** and
-**[references/banned-phrases.md](references/banned-phrases.md)**
+**[references/banned-phrases.md](references/banned-phrases.md)** for the landing-page
+specifics; **[references/compliance.md](references/compliance.md)** for the cross-cutting
+advertising, consent, promotion and anti-spam rules every Vietnamese skill shares.
 
 ## Step 6 — Validate, fix, then ship
 

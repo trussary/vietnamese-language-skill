@@ -1,6 +1,6 @@
 <!-- vlc-disable: all -->
 <!-- GENERATED FILE — do not edit by hand.
-     Source: evals/pairs.jsonl. Regenerate with: python tools/build_examples.py -->
+     Source: evals/vietnamese-landing-copy/pairs.jsonl. Regenerate with: python tools/build_examples.py -->
 
 # Examples — bad to good
 

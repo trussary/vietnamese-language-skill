@@ -1,4 +1,3 @@
-<!-- GENERATED FILE — do not edit. Source: shared/references/locale-formatting.md (sha256 e03c611eb6eef309). Edit the source and run `python tools/sync_shared.py`. -->
 <!-- vlc-disable: NUM001, NUM002, DIA001 -->
 
 # Locale formatting — vi-VN
