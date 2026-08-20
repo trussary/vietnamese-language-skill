@@ -1,5 +1,7 @@
 # vietnamese-language-skill
 
+*[Tiếng Việt](README.vi.md)*
+
 Agent Skills that make Claude write Vietnamese a Vietnamese professional would actually ship.
 
 Vietnamese is a low-resource language for LLMs. Unguided, the output is fluent-sounding
