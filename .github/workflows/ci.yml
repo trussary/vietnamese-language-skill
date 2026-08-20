@@ -1,0 +1,109 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: tests (python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install test dependencies
+        run: python -m pip install --upgrade pip pytest
+
+      - name: Run test suite
+        run: python -m pytest tests/ -q
+
+  consistency:
+    name: generated files and self-lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # references/examples.md is generated from evals/pairs.jsonl. If someone edited it
+      # by hand, the corpus and the docs have diverged.
+      - name: examples.md is in sync with the corpus
+        run: python tools/build_examples.py --check
+
+      # The skill's own documentation must pass the skill's own linter. This is what
+      # catches an aspirational rule that nobody, including us, actually follows.
+      - name: Lint the skill with its own validator
+        run: |
+          python skills/vietnamese-landing-copy/scripts/validate_copy.py \
+            skills/vietnamese-landing-copy/ --ext .md,.json,.template
+
+      - name: Font coverage of the shipped template
+        run: |
+          python skills/vietnamese-landing-copy/scripts/check_font_coverage.py \
+            skills/vietnamese-landing-copy/assets/vi.json.template
+
+      # The body is a router; detail belongs in references/. Past ~500 lines the
+      # progressive-disclosure budget is blown.
+      - name: SKILL.md body stays within budget
+        run: |
+          python - <<'PY'
+          import pathlib, sys
+          failed = False
+          for skill in sorted(pathlib.Path("skills").glob("*/SKILL.md")):
+              text = skill.read_text(encoding="utf-8")
+              end = text.find("\n---\n", 4)
+              body = text[end + 5:] if end != -1 else text
+              count = len(body.splitlines())
+              print(f"{skill} body: {count} lines")
+              if count > 500:
+                  print(f"::error file={skill}::body is {count} lines, over the 500-line budget")
+                  failed = True
+          sys.exit(1 if failed else 0)
+          PY
+
+      - name: Manifests are valid JSON
+        run: |
+          python -c "import json,sys;[json.load(open(f,encoding='utf-8')) for f in sys.argv[1:]]" \
+            .claude-plugin/plugin.json \
+            .claude-plugin/marketplace.json \
+            skills/vietnamese-landing-copy/assets/vi.json.template
+
+  spec:
+    name: agent skill spec
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      # Upstream spec validator. tests/test_skill_spec.py checks the same rules plus
+      # link resolution and the stdlib-only constraint, without a network dependency.
+      - name: skills-ref validate
+        run: |
+          for skill in skills/*/; do
+            npx --yes skills-ref validate "$skill"
+          done
+
+      # `npx skills add` is the primary documented install path. If the CLI stops
+      # discovering the skill in this repo layout, that install path is silently broken.
+      - name: skills CLI can discover the skill
+        run: |
+          npx --yes skills add . --list | tee /tmp/skills-list.txt
+          grep -q "vietnamese-landing-copy" /tmp/skills-list.txt

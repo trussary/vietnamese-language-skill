@@ -1,0 +1,67 @@
+name: Bug report
+description: A validator false positive or false negative, or anything else broken
+title: "bug: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **False positives are the most serious bug class in this project.** A linter that
+        flags correct Vietnamese gets disabled wholesale, and then it catches nothing.
+        Please file them.
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What kind of problem
+      options:
+        - False positive — a rule fired on correct Vietnamese
+        - False negative — a rule missed a real defect
+        - Bad suggestion — the fix hint is wrong or unidiomatic
+        - Skill did not trigger when it should have
+        - Skill triggered when it should not have
+        - Script crash or error
+        - Documentation error
+    validations:
+      required: true
+
+  - type: input
+    id: rule
+    attributes:
+      label: Rule id
+      description: If applicable — CAL001, LAW001, NUM001, TONE001, and so on.
+      placeholder: CAL001
+
+  - type: textarea
+    id: input
+    attributes:
+      label: Input
+      description: The exact Vietnamese text, or the prompt you used.
+      render: text
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened
+      description: Paste the validator output verbatim, or describe the behaviour.
+      render: text
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What should have happened
+      description: >
+        For a false positive, explain why the flagged text is correct Vietnamese — that
+        explanation becomes the fix.
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Skill version and Python version
+      placeholder: "1.0.0, Python 3.12"

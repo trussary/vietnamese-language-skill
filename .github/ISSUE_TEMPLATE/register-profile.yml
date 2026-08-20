@@ -1,0 +1,73 @@
+name: Register profile
+description: Propose a register for a vertical the skill does not cover yet
+title: "register: "
+labels: ["register", "needs-native-review"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The skill currently ships `re` (real estate, finance, luxury), `formal`
+        (institutional), `consult` (sales consulting), and `saas` (tech, e-commerce).
+        Government, education, medical, and F&B are all open.
+
+  - type: input
+    id: vertical
+    attributes:
+      label: Vertical
+      placeholder: Healthcare — private clinics and hospitals
+    validations:
+      required: true
+
+  - type: input
+    id: pronoun
+    attributes:
+      label: How the reader is addressed
+      placeholder: quý khách / anh chị / bạn / something else
+    validations:
+      required: true
+
+  - type: input
+    id: self
+    attributes:
+      label: How the organisation refers to itself
+      placeholder: chúng tôi / bệnh viện / nhà trường
+    validations:
+      required: true
+
+  - type: textarea
+    id: headlines
+    attributes:
+      label: Five real headlines
+      description: >
+        From live Vietnamese sites in this vertical, with links. This is the evidence the
+        profile is real and not invented.
+      placeholder: |
+        1. "..." — https://example.vn
+        2. "..." — https://example.vn
+    validations:
+      required: true
+
+  - type: textarea
+    id: vocabulary
+    attributes:
+      label: Distinguishing vocabulary
+      description: Words this vertical uses that the existing profiles do not, and words it avoids.
+    validations:
+      required: true
+
+  - type: textarea
+    id: legal
+    attributes:
+      label: Sector-specific legal constraints
+      description: >
+        Mandatory disclaimers, regulated claims, licensing statements. Healthcare and finance
+        both have these.
+      placeholder: Functional foods must carry "Sản phẩm này không phải là thuốc..."
+
+  - type: checkboxes
+    id: speaker
+    attributes:
+      label: Native speaker
+      options:
+        - label: I am a native Vietnamese speaker
+        - label: I am not, and this needs native review before merging
