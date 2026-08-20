@@ -100,9 +100,47 @@ hit on any of them means the descriptions have started competing.
 
 ---
 
+# `vietnamese-business-comms`
+
+## Should trigger (10)
+
+| # | Prompt | Why it should |
+|---|---|---|
+| 1 | Viết email chào hàng tiếng Việt gửi khách doanh nghiệp | Core case: B2B cold outreach, prompt in Vietnamese |
+| 2 | Write a Vietnamese cold email to a prospect | Same, in English |
+| 3 | Soạn mẫu ZNS xác nhận đơn hàng cho Zalo OA | Zalo template, transactional tag |
+| 4 | Viết tiêu đề sản phẩm cho gian hàng Shopee | Marketplace listing conventions |
+| 5 | Làm báo giá tiếng Việt cho khách, có VAT | Quote structure and VAT treatment |
+| 6 | Is a 70% discount legal in a Vietnamese promotion? | The khuyến mại ceiling |
+| 7 | Write a polite payment reminder in Vietnamese | Dunning register and escalation |
+| 8 | Draft a Vietnamese press release for our product launch | Institutional register |
+| 9 | Viết caption TikTok tiếng Việt cho chiến dịch sale | Social copy, emoji and hashtag norms |
+| 10 | What must a Vietnamese KOL disclose in a sponsored post? | Luật 75/2025 disclosure duty |
+
+## Should NOT trigger (10)
+
+| # | Prompt | Why it should not |
+|---|---|---|
+| 11 | Viết landing page cho dự án căn hộ tại Quận 7 | `vietnamese-landing-copy` owns website page copy |
+| 12 | Write a Vietnamese commit message for this change | `vietnamese-tech-writing` owns it |
+| 13 | Format this Vietnamese invoice with the right VAT fields | `vietnamese-finance-copy` owns invoices |
+| 14 | Can we advertise a guaranteed 12% annual return? | Financial promotion — finance skill plus legal |
+| 15 | Write a cold email to a prospect | No Vietnamese in scope |
+| 16 | How do I set up a Zalo OA account? | Platform ops question, not copy |
+| 17 | What is the VAT rate in Vietnam? | Tax question, not copy |
+| 18 | Summarize this Vietnamese news article | Reading comprehension, not authoring |
+| 19 | Translate this contract into Vietnamese | Legal drafting, not commercial writing |
+| 20 | Review my Python code for bugs | Unrelated |
+
+Prompts 11–14 are the routing tests. Prompt 14 is the sharpest: it is marketing in form and
+regulated financial promotion in substance, and it must go to the finance skill.
+
+---
+
 ## Results log
 
 | Date | Skill | Version | Score | Notes |
 |---|---|---|---|---|
 | _not yet run_ | vietnamese-landing-copy | 1.0.0 | — | Run before tagging a release |
 | _not yet run_ | vietnamese-tech-writing | 1.0.0 | — | Run before tagging a release |
+| _not yet run_ | vietnamese-business-comms | 1.0.0 | — | Run before tagging a release |

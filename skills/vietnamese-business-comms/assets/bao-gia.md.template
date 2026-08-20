@@ -1,0 +1,52 @@
+<!-- Báo giá template. Replace every [bracket]. Validate with:
+     python scripts/validate_copy.py bao-gia.md --doctype bao-gia --register b2b -->
+
+# BÁO GIÁ
+
+**Kính gửi:** [Anh/Chị Tên] — [Chức vụ], [Công ty]
+**Từ:** [Tên người gửi], [Chức vụ] — [Công ty]
+**Số báo giá:** [BG-2026-001]  ·  **Ngày:** [dd/MM/yyyy]
+
+Kính gửi anh/chị,
+
+Cảm ơn anh/chị đã quan tâm đến [sản phẩm/dịch vụ]. Sau khi trao đổi về nhu cầu của bên
+anh/chị, em xin phép gửi báo giá chi tiết như sau.
+
+## Phạm vi công việc
+
+[Mô tả ngắn gọn phạm vi. Một đoạn, không quá 5 dòng.]
+
+## Bảng giá
+
+| STT | Hạng mục | Đơn vị | Số lượng | Đơn giá | Thành tiền |
+|---|---|---|---|---|---|
+| 1 | [Hạng mục] | [gói/tháng] | [1] | [10.000.000 ₫] | [10.000.000 ₫] |
+| 2 | [Hạng mục] | [gói/tháng] | [1] | [5.000.000 ₫] | [5.000.000 ₫] |
+| | **Tổng cộng** | | | | **[15.000.000 ₫]** |
+
+**Giá trên đã bao gồm thuế GTGT 10%.**
+<!-- or: Giá trên chưa bao gồm thuế GTGT. Say one or the other — never leave it open. -->
+
+## Điều khoản
+
+- **Thanh toán:** [Đặt cọc 30% khi ký hợp đồng, 70% khi nghiệm thu.]
+- **Thời gian triển khai:** [15 ngày làm việc kể từ ngày đặt cọc.]
+- **Bảo hành:** [12 tháng kể từ ngày nghiệm thu.]
+- **Báo giá có hiệu lực đến ngày [dd/MM/yyyy].**
+
+## Thông tin xuất hóa đơn
+
+- Đơn vị: [Tên công ty]
+- MST: [0123456789]
+- Địa chỉ: [số nhà, đường, phường, quận, thành phố]
+
+---
+
+Nếu anh/chị cần điều chỉnh phạm vi hoặc có câu hỏi về báo giá, anh/chị cho em biết để bên em
+hỗ trợ ạ.
+
+Trân trọng,
+
+**[Tên người gửi]**
+[Chức vụ] — [Công ty]
+[Điện thoại] · [Email]
