@@ -1,0 +1,456 @@
+# **Adding education to vietnamese-language-skill**
+
+## **TL;DR**
+
+* **Architecture Decision:** Establish a standalone vietnamese-education-copy skill dedicated strictly to instructional, administrative, and academic communication (K-12 and Higher Education).  
+* **Domain Segregation:** The Education domain must be fragmented across the existing skill ecosystem. EdTech software localization (button strings, UI menus) must be routed to vietnamese-tech-writing. Educational marketing, specifically test-prep and study-abroad advertising, must trigger vietnamese-business-comms to utilize its established advertising compliance engine.  
+* **Regulatory Shift (2024–2026):** The legal landscape for educational copywriting has fundamentally changed, creating high-risk compliance surfaces. Thông tư 29/2024/TT-BGDĐT (effective February 14, 2025\) strictly regulates and restricts private tutoring1, while Nghị định 87/2026/NĐ-CP (effective May 15, 2026\) imposes severe penalties on false advertising and absolute outcome guarantees in education2.  
+* **Statutory Terminology:** K-12 report cards and university transcripts are heavily governed by specific Ministry of Education and Training (MoET) circulars, namely Thông tư 22/2021, Thông tư 27/2020, and Thông tư 08/2021. Unguided large language models frequently hallucinate or use calques for these grading scales, requiring hard-coded, doctype-gated lint rules4.  
+* **Pronoun Complexity:** Educational registers require a specialized matrix extension, particularly the nuanced handling of thầy/cô ↔ em versus thầy/cô ↔ con, and the highly formalized quý phụ huynh (school-to-parent) dynamic7.  
+* **Do Not Build:** The "Curriculum, textbook, and government-facing education content" sub-area lacks a sufficient machine-checkable surface, does not trigger frequent failure modes, and should be excluded from the skill's operational scope.
+
+## **Recommended architecture**
+
+The analysis indicates that "Education" encompasses overlapping but linguistically distinct registers that threaten severe keyword collision with existing skills if not architected carefully. A hybrid architectural approach is strongly recommended.  
+The primary recommendation is to create a single new standalone skill named vietnamese-education-copy. This skill will exclusively handle academic administration, K-12 communications, university prose, and e-learning instructional content (e.g., video subtitles, lesson prose). However, routing exclusions must be strictly defined in the YAML frontmatter. EdTech software localization, which primarily involves microcopy, progress states, and system notifications, shares its fundamental linguistic DNA with software engineering and must be explicitly excluded and handled by vietnamese-tech-writing. Similarly, educational advertising for tutoring centers and study-abroad consultancies is fundamentally marketing copy subject to commercial law; it must remain within vietnamese-business-comms, though that skill's compliance engine must be updated with education-specific ad regulations.  
+**Proposed Frontmatter (skills/vietnamese-education-copy/SKILL.md):**
+
+YAML  
+name: vietnamese-education-copy  
+description: \>  
+  Generates, translates, and reviews Vietnamese academic, instructional, and school   
+  administrative copy. Triggers on requests involving K-12 school communications,   
+  university transcripts, syllabi, report cards, teacher-to-student messaging,   
+  parent notifications (sổ liên lạc), e-learning lesson content, and academic prose.   
+  Enforces MoET statutory grading terminology (Thông tư 22/2021, Thông tư 27/2020)   
+  and localized academic formatting. Do NOT use this skill for educational software UI   
+  localization (use vietnamese-tech-writing) or tutoring/study-abroad marketing   
+  (use vietnamese-business-comms).
+
+**Keyword-collision check (tests/test\_trigger\_keywords.py simulation):**
+
+* **Claimed keywords:** school, university, teacher, student, parents, syllabus, report card, sổ liên lạc, học bạ, đề cương, academic, transcript, grading.  
+* **Collision risks:** The keyword e-learning risks colliding with vietnamese-tech-writing due to the shared software context. The keyword admissions risks colliding with vietnamese-business-comms if the user prompt asks for "admissions marketing."  
+* **Resolution:** The negative triggering directives in the proposed description ("Do NOT use this skill for...") are strictly required to resolve these overlaps during the trigger phase. The keyword list remains highly specific to pedagogical and administrative artifacts, ensuring clean separation.
+
+## **Register-matrix extension**
+
+The shared register matrix (shared/references/register-matrix.md) requires the immediate addition of specific educational address terms. The hierarchical nature of the Vietnamese pedagogical system demands pronoun pairs that reflect age, authority, and institutional respect. The analysis confirms that these additions do not conflict with existing forbidden-pronoun lists in other domains, provided they are scoped correctly.
+
+| Code | Speaker | Listener | Context | Pronoun Pair | Forbidden / Notes |
+| :---- | :---- | :---- | :---- | :---- | :---- |
+| EDU\_TEACHER\_K12 | Teacher | Student | K-12 classroom, assignments, feedback. | thầy/cô ↔ em | **Forbidden:** tôi ↔ bạn, anh/chị. em is the standard anchor for secondary (THCS/THPT) students. |
+| EDU\_TEACHER\_PRI | Teacher | Student | Kindergarten, Primary, or older teacher to young child. | thầy/cô ↔ con | **Forbidden:** tôi ↔ bác/chú. con implies strong pastoral care, commonly used in primary education. |
+| EDU\_ADMIN\_UNI | University | Undergrad | Higher-ed administrative announcements, portals. | nhà trường/phòng ↔ sinh viên | **Forbidden:** các em (in highly formal notices), học sinh. Use 3rd person sinh viên for formal prose. |
+| EDU\_SCHOOL\_PAR | School/Teacher | Parent | Broadcast notices, report cards, Zalo groups. | nhà trường/giáo viên ↔ quý phụ huynh | **Forbidden:** các bạn, anh/chị (unless in a 1-to-1 Zalo chat where the parent's age is known). |
+| EDU\_EDTECH\_PEER | EdTech App | Learner | App notifications, gamification, language apps. | chúng mình/nil ↔ bạn | **Forbidden:** quý khách. Maintains the energetic, peer-to-peer tone of platforms like VioEdu7. |
+
+## **Priority order**
+
+The implementation of the Education domain must be staged according to the density of machine-checkable rules and the severity of observed failure modes. The following priority order applies the (value of fixing) × (density of hard, checkable rules) ÷ (research and native-review cost) formula.
+
+> 1. **K-12 school communications (High Priority):** This sub-area features strict, statutory terminology defined by MoET circulars, frequent usage patterns (e.g., Zalo groups, report cards), and clear, catastrophic failure modes where language models hallucinate abolished grading scales. The checkable surface is extremely dense and easily regex-parsable.  
+> 2. **Higher education and academic writing (High Priority):** Transcript formatting and diploma phrasing strictly follow national standards. Models routinely fail to distinguish between Sino-Vietnamese academic registers and standard translated English, resulting in documents that appear legally invalid or institutionally naive.  
+> 3. **Private tutoring, test-prep, and study-abroad marketing (Medium Priority):** While highly regulated by the 2024–2026 legal frameworks, this sub-area is fundamentally *marketing*. It should not be built into the Education skill directly, but its rules must be appended to the vietnamese-business-comms compliance engine immediately to prevent the generation of illegal advertising copy under the new statutory regimes.  
+> 4. **EdTech and e-learning product copy (Low Priority for standalone):** The checkable surface here is relatively thin, primarily concerning subtitle character limits and pronoun consistency (bạn or con). Software UI localization should be routed to vietnamese-tech-writing, mitigating the need for extensive new rule creation.  
+> 5. **Curriculum, textbook, and government-facing education content (Do Not Build):** The checkable surface is virtually nonexistent. The frequency of use by standard enterprise users is extremely low, and language models generally handle formal government prose adequately without specialized intervention. This sub-area represents a poor return on engineering effort.
+
+## **Sub-area: K-12 school communications**
+
+### **Genre inventory**
+
+The artifacts within K-12 communications blend legal reporting requirements with deeply cultural, community-driven messaging formats.
+
+| Artifact | Who writes it | Register | Length/Format Norms |
+| :---- | :---- | :---- | :---- |
+| Sổ liên lạc (Report Card Remarks) | Homeroom Teacher (GVCN) | Formal, encouraging (thầy/cô ↔ em/con) | 2–3 sentences. Must strictly use statutory qualitative evaluation levels (e.g., Tốt, Đạt, Cần cố gắng)4. |
+| Zalo Broadcasts | Teacher / School Admin | Professional yet warm (nhà trường ↔ quý phụ huynh) | 100–150 words. Bulleted lists, frequent use of formatting and emojis, especially in primary levels9. |
+| Disciplinary/Absence Notices | Admin / Teacher | Highly formal (nhà trường ↔ gia đình/phụ huynh) | Standardized administrative forms, referencing specific school codes and statutory conduct regulations10. |
+| E-learning Portal Updates | EdTech platforms (VNEDU, eNetViet) | Concise, system-generated (hệ thống ↔ phụ huynh) | 1–2 lines, SMS-style character constraints, direct presentation of grades and attendance11. |
+
+### **Register and address**
+
+The relational dynamic between teachers, students, and parents in K-12 education is strictly codified, rooted in hierarchical respect. When communicating with parents collectively, the mandatory standard address is quý phụ huynh7. Models frequently fail by translating "parents" as các bậc cha mẹ, which sounds unnaturally literal, archaic, and emotionally distant in a daily Zalo update.  
+When addressing primary students, con is widely used and accepted as a term of endearment and pedagogical authority, whereas secondary (THCS) and high school (THPT) students are uniformly addressed as em. Addressing a student as bạn in a formal teacher-student context is a direct calque from English ("you") and strips the sentence of the required hierarchical respect. In one-on-one communications between a teacher and a parent, the teacher will often refer to the student as em \[Tên\] or cháu (if the teacher is significantly older), maintaining the institutional distance.
+
+### **Terminology**
+
+| EN | ❌ Calque / Unnatural | ✅ Native / Statutory | Register |
+| :---- | :---- | :---- | :---- |
+| Excellent (Primary) | Xuất sắc | Hoàn thành xuất sắc | Statutory (TT 27/2020)5 |
+| Needs Improvement (Primary) | Cần cải thiện | Cần cố gắng | Statutory (TT 27/2020)5 |
+| Good (Secondary) | Giỏi | Tốt | Statutory (TT 22/2021)13 |
+| Pass / Fail | Đậu / Rớt | Đạt / Chưa đạt | Statutory (TT 22/2021)14 |
+| Homeroom Teacher | Giáo viên phòng nhà | Giáo viên chủ nhiệm (GVCN) | Standard K-12 |
+| Report Card | Thẻ báo cáo | Học bạ / Sổ liên lạc | Standard K-1215 |
+| Parents (collective) | Các bậc cha mẹ | Quý phụ huynh | Formal School-to-Home7 |
+
+### **Regulated and restricted language**
+
+Recent legislative overhauls have drastically altered the vocabulary permissible in official student assessments.
+
+| Phrase/Concept | Instrument | Article | Effective Date | Penalty / Issue | Safe Rewrite |
+| :---- | :---- | :---- | :---- | :---- | :---- |
+| GPA or "Average Score" (THCS/THPT) | Thông tư 22/2021/TT-BGDĐT | Điều 9 | Sept 5, 2021 | The term "Điểm trung bình các môn" is abolished for overall classification. The legacy categories "Tiên tiến" and "Trung bình" are eliminated4. | Use statutory levels: Tốt, Khá, Đạt, Chưa đạt13. |
+| Grading Primary Students with numbers | Thông tư 27/2020/TT-BGDĐT | Điều 6 & 7 | Oct 20, 2020 | Routine assessments must be qualitative (nhận xét), not scored with raw numbers5. | Focus on competencies: Hoàn thành tốt, Cần cố gắng5. |
+
+### **Formatting conventions**
+
+* **Qualitative Assessment Construction:** Statutory grading under Thông tư 22 and 27 mandates that negative feedback be framed constructively to protect student psychology. An output generating "Học sinh học kém" (The student studies poorly) is a severe pedagogical failure mode; the correct formulation is "Em cần cố gắng hơn ở môn..." (The student needs to make more effort in...)5.  
+* **Abbreviation Norms:** Subject names are routinely capitalized in continuous prose (Toán, Tiếng Việt, Ngữ văn, Khoa học Tự nhiên). The acronyms GVCN (Giáo viên chủ nhiệm) and PHHS (Phụ huynh học sinh) are universally standard in internal documentation, group chats, and portal notifications.
+
+### **Observed failure modes**
+
+> 1. **Statutory Scale Hallucination:** Unguided models evaluate Vietnamese secondary students using the legacy terms "Giỏi" (Excellent) and "Tiên tiến" (Advanced). Since the implementation of Thông tư 22/2021/TT-BGDĐT, the term "Tiên tiến" has been entirely abolished, and the overall classifications are strictly "Tốt", "Khá", "Đạt", and "Chưa đạt"4. Generating a report card with "Tiên tiến" immediately identifies the text as historically inaccurate and artificially generated.  
+> 2. **Parental Address Calques:** Translating "Dear Parents" as "Thân gửi các cha mẹ" rather than the culturally required "Kính gửi Quý phụ huynh." This breaks the formal cooperative barrier mandated by the Ministry of Education's guidelines on school-home coordination (Điều 89 Luật Giáo dục 2019\)10.  
+> 3. **Direct Translation of Disciplinary Action:** Translating "detention" or "suspension" using direct US-centric legalistic language, rather than referencing "hạ hạnh kiểm" (lowering conduct grade) or "vi phạm nội quy" (violating school rules), which are the actual mechanisms utilized within Vietnamese disciplinary frameworks10.
+
+### **Proposed lint rules**
+
+| ID | Severity | What it catches | Regex-feasible? | False-positive risk |
+| :---- | :---- | :---- | :---- | :---- |
+| EDU001 | Error | Detects legacy grading terms Học sinh Tiên tiến in K-12 contexts. | Yes (/học sinh tiên tiến/i with \--doctype secondary-report-card) | Low (Term is legally abolished4). |
+| EDU002 | Warn | Identifies "bạn" used as a pronoun in teacher-to-student text. | Yes (requires \--doctype teacher-to-student) | Medium (Requires accurate doctype gating; "các bạn" is sometimes used for the whole class). |
+| EDU003 | Error | Detects "Cần cải thiện" in primary evaluations instead of "Cần cố gắng". | Yes (/cần cải thiện/i with \--doctype primary-report-card) | Low (Statutory phrase matching5). |
+
+### **Eval pairs**
+
+Code snippet  
+{"id": "k12-001", "category": "K-12 school communications", "en": "The student is Excellent. Overall GPA is 9.0.", "bad": "Học sinh đạt loại Giỏi. Điểm trung bình các môn là 9.0.", "good": "Học sinh có kết quả học tập mức Tốt. Điểm trung bình các môn học được tính theo quy định.", "diagnosis": "Uses abolished overall GPA classification and legacy 'Giỏi' instead of 'Tốt' under Thông tư 22/2021.", "expected\_rules": \["EDU001"\]}  
+{"id": "k12-002", "category": "K-12 school communications", "en": "Dear Parents, please remember to sign the report card.", "bad": "Thân gửi các cha mẹ, xin vui lòng nhớ ký tên vào thẻ báo cáo.", "good": "Kính gửi Quý phụ huynh, xin vui lòng ký xác nhận vào sổ liên lạc.", "diagnosis": "Calques 'Dear Parents' and 'report card'; fails to use standard 'Quý phụ huynh' and 'sổ liên lạc'.", "expected\_rules": \[\]}  
+{"id": "k12-003", "category": "K-12 school communications", "en": "He needs improvement in Mathematics.", "bad": "Em ấy cần cải thiện trong môn Toán.", "good": "Em cần cố gắng hơn ở môn Toán.", "diagnosis": "Translates 'needs improvement' directly instead of using the statutory evaluation term 'cần cố gắng' from Thông tư 27.", "expected\_rules": \["EDU003"\]}  
+{"id": "k12-004", "category": "K-12 school communications", "en": "You have to finish your homework.", "bad": "Bạn phải hoàn thành bài tập về nhà của mình.", "good": "Em cần hoàn thành bài tập về nhà.", "diagnosis": "Uses 'bạn' for a student in a teacher's voice, which violates hierarchical norms.", "expected\_rules": \["EDU002"\]}  
+{"id": "k12-005", "category": "K-12 school communications", "en": "The student failed the second semester.", "bad": "Học sinh đã rớt học kỳ hai.", "good": "Học sinh có kết quả học tập mức Chưa đạt ở học kỳ II.", "diagnosis": "Uses colloquial 'rớt' instead of statutory 'Chưa đạt' for K-12 grading.", "expected\_rules": \[\]}  
+{"id": "k12-006", "category": "K-12 school communications", "en": "Please check the eNetViet app for grades.", "bad": "Xin vui lòng kiểm tra ứng dụng eNetViet cho các điểm số.", "good": "Quý phụ huynh vui lòng theo dõi kết quả học tập của con trên ứng dụng eNetViet.", "diagnosis": "Unnatural phrasing; native school comms explicitly address 'Quý phụ huynh' and refer to 'kết quả học tập'.", "expected\_rules": \[\]}  
+{"id": "k12-007", "category": "K-12 school communications", "en": "She is an Advanced student.", "bad": "Cô ấy là Học sinh Tiên tiến.", "good": "Em đạt danh hiệu Học sinh Khá.", "diagnosis": "Uses the abolished 'Học sinh Tiên tiến' title.", "expected\_rules": \["EDU001"\]}  
+{"id": "k12-008", "category": "K-12 school communications", "en": "I am writing to inform you of your child's absence.", "bad": "Tôi viết thư này để thông báo cho bạn về sự vắng mặt của con bạn.", "good": "Nhà trường xin thông báo đến Quý phụ huynh về việc vắng học của em.", "diagnosis": "Literal translation of formal English letter opening; improper pronoun use.", "expected\_rules": \[\]}
+
+### **Open questions for a native speaker**
+
+* Should the validator enforce GVCN as an auto-replacement for "Homeroom teacher" in all informal contexts (like Zalo messages), or preserve the full spelling to allow stylistic flexibility?  
+* Verify if the distinction between Tốt (overall classification) and Giỏi (subject-specific high score) is fully internalized by parents yet, or if schools still informally use Giỏi in parent communications despite Thông tư 22 mandates.
+
+## **Sub-area: Higher education and academic writing**
+
+### **Genre inventory**
+
+Higher education documentation operates within a distinct bureaucratic and academic ecosystem, heavily reliant on Sino-Vietnamese terminology to project institutional authority.
+
+| Artifact | Who writes it | Register | Length/Format Norms |
+| :---- | :---- | :---- | :---- |
+| Course Syllabus | Professor / Department | Highly formal, Hán-Việt heavy | Standardized templates (Đề cương chi tiết học phần). Heavily utilizes mục tiêu and chuẩn đầu ra (learning outcomes). |
+| Transcripts | University Admin | Bureaucratic, standardized | Tabular format. Must use tín chỉ (credits) and specific grading scales mandated by the state6. |
+| Thesis Abstract | Student / Researcher | Academic, passive voice | 250–500 words. Complex sentence structures, rigorous discipline-specific terminology, and strict avoidance of first-person pronouns. |
+| Admin Announcements | University Portal | Formal (nhà trường ↔ sinh viên) | Bulleted instructions for registration (đăng ký học phần), tuition (học phí), and administrative deadlines. |
+
+### **Register and address**
+
+In higher education, the paternalistic K-12 thầy/cô ↔ con dynamic is entirely abandoned. The baseline interaction is thầy/cô ↔ em, but administrative prose exclusively uses the third-person sinh viên. When students are addressed directly in portal instructions or financial notices, anh/chị is frequently used, acknowledging their legal status as adults and consumers of an educational service. The academic register heavily favors Sino-Vietnamese (Hán-Việt) vocabulary to convey formality and precision (e.g., using phương pháp luận instead of cách làm, or chuẩn đầu ra for outcomes). Language models frequently fail to elevate the vocabulary, resulting in abstracts or syllabi that read like conversational English translations.
+
+### **Terminology**
+
+| EN | ❌ Calque / Unnatural | ✅ Native / Statutory | Register |
+| :---- | :---- | :---- | :---- |
+| Credit (academic) | Tín dụng / Điểm | Tín chỉ | Statutory (TT 08/2021)6 |
+| Original diploma | Bằng gốc | Bản chính (từ sổ gốc) | Statutory (TT 21/2019)18 |
+| Learning Outcomes | Kết quả học tập | Chuẩn đầu ra | Academic / Syllabus |
+| Syllabus | Giáo trình | Đề cương môn học / Đề cương chi tiết | Academic Administration |
+| Course registration | Đăng ký khóa học | Đăng ký học phần | University Admin |
+| Plagiarism | Ăn cắp ý tưởng | Đạo văn | Academic Integrity |
+
+### **Regulated and restricted language**
+
+The administrative mechanisms of Vietnamese universities are governed by rigid state circulars, leaving no room for creative translation of core concepts.
+
+| Phrase/Concept | Instrument | Article | Effective Date | Penalty / Issue | Safe Rewrite |
+| :---- | :---- | :---- | :---- | :---- | :---- |
+| GPA Conversion (4.0 Scale) | Thông tư 08/2021/TT-BGDĐT | Điều 14 | May 3, 2021 | Using terms like "Loại A" without mapping to the statutory labels (Xuất sắc, Giỏi, Khá) creates administrative invalidity6. | Map directly: 3.6-4.0 \= Xuất sắc; 3.2-3.59 \= Giỏi; 2.5-3.19 \= Khá6. |
+| Reissuing Diplomas | Thông tư 21/2019/TT-BGDĐT | Điều 18 & 31 | Jan 15, 2020 | Law strictly forbids issuing multiple "original" diplomas; replacements are always bản sao từ sổ gốc18. | Use Cấp bản sao văn bằng từ sổ gốc18. |
+
+### **Formatting conventions**
+
+* **Number Formatting in Transcripts:** Transcripts and GPAs strictly use the comma for decimals in the Vietnamese locale (e.g., 3,5/4,0 or 8,5/10), not periods. Grouping separators remain periods (e.g., 1.500.000 VNĐ for tuition fees). Translating a transcript with "GPA 3.5" immediately flags the document as a foreign artifact.  
+* **Capitalization:** Names of university faculties and specific degrees are capitalized following Vietnamese proper noun rules, which prioritize the first letter of each constituent word block (e.g., Cử nhân Quản trị Kinh doanh, Khoa Công nghệ Thông tin).
+
+### **Observed failure modes**
+
+> 1. **Administrative Calques:** Models frequently translate "course registration" as "đăng ký khóa học" (register for a course), whereas the standard university term in Vietnam is "đăng ký học phần" (register for a module/credit block).  
+> 2. **Syllabus Terminology:** Translating "syllabus" as "giáo trình" (textbook/curriculum material) rather than the administratively correct "đề cương môn học" (course outline).  
+> 3. **Legal Diploma Terminology:** Translating "original diploma reissue" as "cấp lại bằng gốc." Under Vietnamese law (Thông tư 21/2019/TT-BGDĐT), original diplomas are issued only once in a lifetime. Lost diplomas result in the issuance of a "bản sao từ sổ gốc" (copy from the master register)18. Models routinely hallucinate a legal replacement mechanism that does not exist in Vietnam.
+
+### **Proposed lint rules**
+
+| ID | Severity | What it catches | Regex-feasible? | False-positive risk |
+| :---- | :---- | :---- | :---- | :---- |
+| EDU004 | Error | Detects "bằng gốc" or "cấp lại bản chính" in the context of lost diplomas. | Yes (\`/cấp lại (bằng gốc | bản chính)/i\`) |
+| EDU005 | Warn | Identifies "tín dụng" (financial credit) in academic texts instead of "tín chỉ". | Yes (requires \--doctype higher-ed) | Medium (A finance course syllabus might legitimately use both). |
+| EDU006 | Error | Identifies decimal points in GPAs (e.g., GPA 3.8) instead of commas (GPA 3,8). | Yes (/GPA\\s\*\\d\\.\\d/) | Low (Standard locale rule). |
+
+### **Eval pairs**
+
+Code snippet  
+{"id": "hed-001", "category": "Higher education and academic writing", "en": "If you lose your diploma, you can request a new original copy.", "bad": "Nếu bạn làm mất bằng, bạn có thể yêu cầu cấp lại bằng gốc.", "good": "Nếu làm mất văn bằng, sinh viên có thể yêu cầu cấp bản sao từ sổ gốc.", "diagnosis": "Fails to use the statutory legal mechanism and terminology (Thông tư 21/2019) for lost diplomas.", "expected\_rules": \["EDU004"\]}  
+{"id": "hed-002", "category": "Higher education and academic writing", "en": "The student has completed 120 credits.", "bad": "Sinh viên đã hoàn thành 120 tín dụng.", "good": "Sinh viên đã tích lũy đủ 120 tín chỉ.", "diagnosis": "Translates 'credit' as financial credit ('tín dụng') instead of academic credit ('tín chỉ').", "expected\_rules": \["EDU005"\]}  
+{"id": "hed-003", "category": "Higher education and academic writing", "en": "Course registration opens on Monday.", "bad": "Đăng ký khóa học sẽ mở vào thứ Hai.", "good": "Cổng đăng ký học phần sẽ mở vào thứ Hai.", "diagnosis": "Uses 'khóa học' (general course) instead of the university administrative term 'học phần'.", "expected\_rules": \[\]}  
+{"id": "hed-004", "category": "Higher education and academic writing", "en": "The syllabus outlines the learning outcomes.", "bad": "Giáo trình phác thảo các kết quả học tập.", "good": "Đề cương chi tiết học phần nêu rõ các chuẩn đầu ra.", "diagnosis": "Calques multiple terms: 'syllabus' is 'đề cương', not 'giáo trình'; 'learning outcomes' is 'chuẩn đầu ra'.", "expected\_rules": \[\]}  
+{"id": "hed-005", "category": "Higher education and academic writing", "en": "His GPA is 3.8/4.0, classifying him as Excellent.", "bad": "GPA của anh ấy là 3.8/4.0, xếp loại Xuất sắc.", "good": "Điểm trung bình tích lũy của sinh viên là 3,8/4,0, xếp loại Xuất sắc.", "diagnosis": "Fails to use Vietnamese comma for decimal locale formatting.", "expected\_rules": \["EDU006"\]}  
+{"id": "hed-006", "category": "Higher education and academic writing", "en": "Plagiarism will result in academic suspension.", "bad": "Ăn cắp ý tưởng sẽ dẫn đến việc bị đình chỉ học tập.", "good": "Hành vi đạo văn sẽ bị xử lý kỷ luật đình chỉ học tập.", "diagnosis": "Uses colloquial 'ăn cắp ý tưởng' instead of the formal academic term 'đạo văn'.", "expected\_rules": \[\]}  
+{"id": "hed-007", "category": "Higher education and academic writing", "en": "Undergraduate students must pay tuition by the 15th.", "bad": "Học sinh đại học phải nộp học phí trước ngày 15.", "good": "Sinh viên phải hoàn thành nghĩa vụ học phí trước ngày 15.", "diagnosis": "Uses 'học sinh' (K-12 student) instead of 'sinh viên' (university student).", "expected\_rules": \[\]}  
+{"id": "hed-008", "category": "Higher education and academic writing", "en": "The thesis defense is scheduled for next week.", "bad": "Cuộc bảo vệ luận án được lên lịch vào tuần tới.", "good": "Lễ bảo vệ khóa luận được dự kiến tổ chức vào tuần tới.", "diagnosis": "Poor sentence flow; 'luận án' is for PhDs, undergrads defend a 'khóa luận' or 'đồ án'.", "expected\_rules": \[\]}
+
+### **Open questions for a native speaker**
+
+* Is the initialism GPA now universally accepted in untranslated form on Vietnamese transcripts, or is Điểm trung bình tích lũy (ĐTBTL) strictly required for official documents?  
+* Check if the grading mapping (3.6-4.0 \= Xuất sắc) varies enough by institution to warrant making EDU006 a warning rather than a blocking error.
+
+## **Sub-area: EdTech and e-learning product copy**
+
+### **Genre inventory**
+
+EdTech encompasses both software localization and pedagogical content generation, straddling the line between engineering constraints and educational intent.
+
+| Artifact | Who writes it | Register | Length/Format Norms |
+| :---- | :---- | :---- | :---- |
+| Gamification UI | Product Team | Enthusiastic, peer-like (chúng mình ↔ bạn / con) | Extremely short. 1-4 words. Emojis and exclamations prevalent. |
+| Subtitles & Dubbing | Content Team / Translators | Conversational to Academic | **Strict constraint:** Max \~42 characters per line. Timing and reading speed parameters apply heavily19. |
+| Parent Dashboard | EdTech PM | Professional, reassuring (hệ thống ↔ quý phụ huynh) | Short explanatory text, data visualization labels7. |
+
+### **Register and address**
+
+EdTech occupies a precarious dual-register space. For child-facing applications (e.g., VioEdu, Duolingo), the application acts as a peer or a friendly, gamified tutor, frequently using bạn or con depending on the target demographic's age7. When the application communicates with the parent (e.g., progress reports, billing, account linking), it abruptly and necessarily switches to the highly formal quý phụ huynh8.  
+Models frequently fail to maintain the segregation between the "Student Portal" and "Parent Portal" registers. This results in jarring semantic drift, such as accidentally addressing a young child with formal financial language (quý khách) or addressing a parent as con during a password reset flow.
+
+### **Terminology**
+
+| EN | ❌ Calque / Unnatural | ✅ Native / Statutory | Register |
+| :---- | :---- | :---- | :---- |
+| Streak | Chuỗi thắng | Chuỗi ngày học / Streak | EdTech UI |
+| Dashboard | Bảng điều khiển | Trang tổng quan / Báo cáo học tập | Parent Portal21 |
+| Subtitle | Tiêu đề phụ | Phụ đề | Video content19 |
+| Timecoding | Mã hóa thời gian | Căn chỉnh thời gian | Subtitling tech19 |
+
+### **Regulated and restricted language**
+
+| Phrase/Concept | Instrument | Article | Effective Date | Penalty / Issue | Safe Rewrite |
+| :---- | :---- | :---- | :---- | :---- | :---- |
+| Consent for child data | Nghị định 13/2023/NĐ-CP | Điều 20 | July 1, 2023 | EdTech apps must secure explicit consent from a parent for processing data of children under 16\. | Add explicit checkbox copy: Tôi là phụ huynh/người giám hộ hợp pháp và đồng ý... |
+
+### **Formatting conventions**
+
+* **Subtitle Constraints:** Vietnamese translations consistently expand English source text by approximately 15-25%. Strict subtitle character limits (usually 42 characters per line, maximum 2 lines) force translators to paraphrase rather than translate directly19. LLMs must be constrained via Python logic rules to avoid generating text blocks that break video encoding software.  
+* **OTP/Login flows:** Standard localized terms apply universally (e.g., "Mã xác nhận" for OTP, "Tên đăng nhập" for username)22.
+
+### **Observed failure modes**
+
+> 1. **Register Bleed:** Mixing formal commercial terms like quý khách (typically utilized in e-commerce or retail finance) with educational environments. EdTech users are categorized strictly as học viên, học sinh, or phụ huynh, never quý khách.  
+> 2. **Subtitle Overflow:** Generating localized video scripts that heavily exceed the 42-character line limit, rendering them technically unusable for standard SRT/VTT encoding parsers19.  
+> 3. **UI Calques:** Translating "Submit assignment" as the militaristic "Nộp nhiệm vụ" instead of the academically appropriate "Nộp bài".
+
+### **Proposed lint rules**
+
+| ID | Severity | What it catches | Regex-feasible? | False-positive risk |
+| :---- | :---- | :---- | :---- | :---- |
+| EDU007 | Warn | Identifies "quý khách" in EdTech doctypes. | Yes (/quý khách/i with \--doctype edtech) | Low (EdTech uses phụ huynh or học viên). |
+| EDU008 | Error | Subtitle line length exceeds 42 characters. | Yes (Logic rule in rules\_education.py: len(line) \> 42\) | None (Hard technical limit). |
+
+### **Eval pairs**
+
+Code snippet  
+{"id": "edt-001", "category": "EdTech and e-learning product copy", "en": "Dear customer, your child's subscription has expired.", "bad": "Kính gửi quý khách, gói đăng ký của con bạn đã hết hạn.", "good": "Kính gửi Quý phụ huynh, gói học tập của tài khoản học sinh đã hết hạn.", "diagnosis": "Uses e-commerce 'quý khách' instead of 'quý phụ huynh' and literal 'subscription'.", "expected\_rules": \["EDU007"\]}  
+{"id": "edt-002", "category": "EdTech and e-learning product copy", "en": "Submit your assignment to maintain your streak.", "bad": "Nộp nhiệm vụ của bạn để duy trì chuỗi thắng.", "good": "Nộp bài tập để giữ vững chuỗi ngày học nhé\!", "diagnosis": "Calques 'assignment' to 'nhiệm vụ' and 'streak' to 'chuỗi thắng' (gaming term).", "expected\_rules": \[\]}  
+{"id": "edt-003", "category": "EdTech and e-learning product copy", "en": "The dashboard shows the daily learning report.", "bad": "Bảng điều khiển hiển thị báo cáo học tập hằng ngày.", "good": "Trang tổng quan sẽ hiển thị báo cáo học tập hằng ngày.", "diagnosis": "Literal translation of 'dashboard' as hardware control panel ('bảng điều khiển').", "expected\_rules": \[\]}  
+{"id": "edt-004", "category": "EdTech and e-learning product copy", "en": "Enter the OTP sent to your phone to link the student account.", "bad": "Nhập mã OTP được gửi đến điện thoại để liên kết tài khoản.", "good": "Nhập mã xác nhận được gửi về điện thoại để liên kết tài khoản học sinh.", "diagnosis": "Fails to use native 'mã xác nhận' for OTP in a standard EdTech flow.", "expected\_rules": \[\]}  
+{"id": "edt-005", "category": "EdTech and e-learning product copy", "en": "This is a very long explanation about the laws of thermodynamics that exceeds the limit.", "bad": "Đây là một lời giải thích rất dài về các định luật nhiệt động lực học vượt quá giới hạn cho phép.", "good": "Đây là phần giải thích chi tiết\\nvề các định luật nhiệt động lực học.", "diagnosis": "Generates a single subtitle string exceeding 42 characters per line, failing SRT constraints.", "expected\_rules": \["EDU008"\]}  
+{"id": "edt-006", "category": "EdTech and e-learning product copy", "en": "Log in to check your progress.", "bad": "Đăng nhập để kiểm tra tiến trình của quý khách.", "good": "Đăng nhập để xem tiến độ học tập của bạn.", "diagnosis": "Uses inappropriate 'quý khách' for a learner app interface.", "expected\_rules": \["EDU007"\]}  
+{"id": "edt-007", "category": "EdTech and e-learning product copy", "en": "Parental consent is required to process data.", "bad": "Sự đồng ý của phụ huynh là bắt buộc để xử lý dữ liệu.", "good": "Cần có sự đồng ý của phụ huynh/người giám hộ để xử lý dữ liệu.", "diagnosis": "A bit rigid; misses the standard legal phrasing 'phụ huynh/người giám hộ' required for NĐ 13/2023 compliance.", "expected\_rules": \[\]}  
+{"id": "edt-008", "category": "EdTech and e-learning product copy", "en": "You answered correctly\! \+10 points.", "bad": "Bạn đã trả lời chính xác\! \+10 điểm.", "good": "Chính xác\! Chúc mừng con được cộng 10 điểm.", "diagnosis": "Robotic tone. EdTech targeting younger users utilizes enthusiastic markers and appropriate pronouns ('con').", "expected\_rules": \[\]}
+
+### **Open questions for a native speaker**
+
+* Confirm if 42 characters is the absolute hard limit for EdTech VTT/SRT in Vietnamese, or if some video players in the local market scale up to 50 characters comfortably due to the natural expansion length of Vietnamese translated strings.
+
+## **Sub-area: Private tutoring, test-prep, and study-abroad marketing**
+
+*Note: Based on the architectural recommendation, this research is meant to inform the compliance engine of the existing vietnamese-business-comms skill, rather than standalone development. However, the exact structure is maintained below as requested.*
+
+### **Genre inventory**
+
+This sub-area operates at the intersection of high-pressure sales tactics and strict government oversight, resulting in a highly volatile copywriting environment.
+
+| Artifact | Who writes it | Register | Length/Format Norms |
+| :---- | :---- | :---- | :---- |
+| Facebook Ads (Trung tâm) | Marketer | Persuasive, FOMO-driven (trung tâm ↔ phụ huynh/bạn) | Emoji-heavy, bullet points, strong CTAs. High risk of false advertising. |
+| Study Abroad Consultancy | Agency | Authoritative, reassuring | Emphasizes visa success rates and outcome guarantees. Heavy legal scrutiny. |
+| Course Brochures | Academic/Sales | Hybrid formal/sales | Lists syllabus, teacher credentials, and pricing structures1. |
+
+### **Register and address**
+
+Tutoring and test-prep marketing direct their copy at two distinct decision-makers. For K-12 tutoring, the parent holds the purchasing power and is addressed directly as Quý phụ huynh or, in more aggressive emotional marketing, Ba/Mẹ. For adult learners (IELTS, study-abroad, vocational training), the tone shifts to a direct bạn or anh/chị. Models frequently fail to identify the true target audience of the copy, addressing third-graders directly in Facebook ads about tuition costs.
+
+### **Terminology**
+
+| EN | ❌ Calque / Unnatural | ✅ Native / Statutory | Register |
+| :---- | :---- | :---- | :---- |
+| Guarantee | Bảo đảm | Cam kết đầu ra | Advertising |
+| Tutoring | Dạy học thêm | Dạy thêm / Học thêm | General1 |
+| Test Prep Center | Trung tâm kiểm tra | Trung tâm luyện thi | Advertising |
+| Study Abroad | Du học | Tư vấn du học | Business |
+
+### **Regulated and restricted language**
+
+**This is the highest-risk sub-area. The legal framework has shifted dramatically in the 2024–2026 legislative sessions.**
+
+| Phrase/Concept | Instrument | Article | Effective Date | Penalty / Issue | Safe Rewrite |
+| :---- | :---- | :---- | :---- | :---- | :---- |
+| Primary School Tutoring | Thông tư 29/2024/TT-BGDĐT | Điều 4 | Feb 14, 2025 | Law strictly **prohibits** extra academic classes (dạy thêm) for primary school students (except arts, sports, life skills)1. Generating ad copy for "Math tutoring for 3rd graders" is generating illegal content. | Market as lớp kỹ năng sống or bồi dưỡng năng khiếu, never dạy thêm Toán/Tiếng Việt lớp 224. |
+| 100% Outcome Guarantee / False Ad | Nghị định 87/2026/NĐ-CP | (General Ad Violations) | May 15, 2026 | Fines of 60-80 million VND (individuals) up to 160 million (organizations) for false, unverified outcome guarantees3. Cannot use absolute claims without verifiable proof. | Use Lộ trình cá nhân hóa giúp tối ưu điểm số, avoid Cam kết đỗ 100%3. |
+| Lừa dối người tiêu dùng | Luật 19/2023/QH15 | Điều 10 | July 1, 2024 | Prohibits deceptive practices and misleading clauses in study abroad/tuition contracts25. | Ensure all claims are transparently verified. |
+
+### **Formatting conventions**
+
+* Pricing is formatted with grouping separators (2.500.000 đ/tháng), strictly following the shared repository rules in shared/references/locale-formatting.md. Models failing to format currency properly destroy the localized illusion of the advertisement.
+
+### **Observed failure modes**
+
+> 1. **Illegal Ad Generation:** Generative AI instructed to write a "high-converting ad for a 3rd-grade math tutoring class" will eagerly comply and generate persuasive copy. This directly violates Thông tư 29/2024/TT-BGDĐT, which explicitly bans academic tutoring for primary students to reduce childhood academic pressure1. The LLM inadvertently acts as an accessory to statutory violation.  
+> 2. **Illegal Outcome Guarantees:** Models instructed to sound "confident" or "authoritative" will default to generating phrases like "Đảm bảo đậu Visa 100%" or "Cam kết IELTS 8.0 tuyệt đối". These violate the deceptive advertising bans in both Nghị định 87/2026/NĐ-CP and Luật Bảo vệ quyền lợi người tiêu dùng 20233.
+
+### **Proposed lint rules**
+
+| ID | Severity | What it catches | Regex-feasible? | False-positive risk |
+| :---- | :---- | :---- | :---- | :---- |
+| LAW00x | Warn | Detects primary school tutoring ads (dạy thêm \+ tiểu học / lớp 1-5). | Yes (\`/dạy thêm.\*\\b(tiểu học | lớp 1 |
+| LAW00y | Warn | Detects absolute outcome guarantees in education (cam kết đỗ 100%, chắc chắn đậu). | Yes (\`/(cam kết | đảm bảo).\*(đỗ |
+
+### **Eval pairs**
+
+Code snippet  
+{"id": "tut-001", "category": "Private tutoring marketing", "en": "We guarantee a 100% visa approval rate for all students.", "bad": "Chúng tôi cam kết tỷ lệ đỗ visa 100% cho tất cả học sinh.", "good": "Chúng tôi cam kết hỗ trợ tối đa để tối ưu tỷ lệ đạt visa cho học viên.", "diagnosis": "Violates Nghị định 87/2026/NĐ-CP and Luật 19/2023 by making an absolute, unprovable outcome guarantee.", "expected\_rules": \["LAW00y"\]}  
+{"id": "tut-002", "category": "Private tutoring marketing", "en": "Sign up for our 3rd-grade Math tutoring classes today\!", "bad": "Đăng ký tham gia lớp dạy thêm Toán lớp 3 của chúng tôi ngay hôm nay\!", "good": "Đăng ký tham gia lớp bồi dưỡng tư duy Toán học dành cho học sinh tiểu học ngay hôm nay\!", "diagnosis": "Violates Thông tư 29/2024/TT-BGDĐT prohibiting academic 'dạy thêm' for primary students. Must be framed as enrichment/skills.", "expected\_rules": \["LAW00x"\]}  
+{"id": "tut-003", "category": "Private tutoring marketing", "en": "Number 1 IELTS center in Hanoi.", "bad": "Trung tâm luyện thi IELTS số 1 tại Hà Nội.", "good": "Trung tâm luyện thi IELTS hàng đầu tại Hà Nội.", "diagnosis": "Uses 'số 1' without licensed proof, violating Luật Quảng cáo Điều 8.", "expected\_rules": \["LAW001"\]}  
+{"id": "tut-004", "category": "Private tutoring marketing", "en": "Dear parents, are your kids struggling?", "bad": "Các cha mẹ thân mến, con bạn đang gặp khó khăn?", "good": "Quý phụ huynh thân mến, các con đang gặp khó khăn trong học tập?", "diagnosis": "Unnatural address ('các cha mẹ', 'con bạn') in marketing material aimed at Vietnamese parents.", "expected\_rules": \[\]}  
+{"id": "tut-005", "category": "Private tutoring marketing", "en": "Only 2,500,000 VND per course.", "bad": "Chỉ 2,500,000 VND mỗi khóa học.", "good": "Chỉ 2.500.000 đ / khóa học.", "diagnosis": "Fails local currency formatting (uses commas instead of periods for grouping, English currency code instead of symbol/đ).", "expected\_rules": \["NUM001"\]}  
+{"id": "tut-006", "category": "Private tutoring marketing", "en": "Our teachers are highly qualified.", "bad": "Các giáo viên của chúng tôi được trang bị trình độ cao.", "good": "Đội ngũ giáo viên của trung tâm có chuyên môn cao.", "diagnosis": "Unnatural direct translation. Native ads use 'đội ngũ giáo viên' and 'chuyên môn cao'.", "expected\_rules": \[\]}  
+{"id": "tut-007", "category": "Private tutoring marketing", "en": "Pass the exam or get your money back.", "bad": "Vượt qua kỳ thi hoặc nhận lại tiền của bạn.", "good": "Cam kết đầu ra \- hoàn học phí nếu không đạt mục tiêu.", "diagnosis": "Clunky translation; native marketers use the standard formula 'Cam kết đầu ra \- hoàn học phí'.", "expected\_rules": \[\]}  
+{"id": "tut-008", "category": "Private tutoring marketing", "en": "Classes are limited to 45 students.", "bad": "Các lớp học được giới hạn ở 45 học sinh.", "good": "Sĩ số lớp học tối đa 45 học sinh theo đúng quy định.", "diagnosis": "Accurate, but 'sĩ số tối đa' is the native administrative and marketing phrasing reflecting TT 29/2024 constraints.", "expected\_rules": \[\]}
+
+### **Open questions for a native speaker**
+
+* Does the phrase "bồi dưỡng tư duy Toán học" successfully bypass the restrictions of Thông tư 29/2024/TT-BGDĐT in practical reality (a legal loophole), or are enforcement agencies penalizing all math-related primary classes regardless of the naming conventions used24? If actively penalized, the LAW00x rule must be strengthened to block *all* math/literature references for primary marketing.
+
+## **Sub-area: Curriculum, textbook, and government-facing education content**
+
+### **Genre inventory**
+
+| Artifact | Who writes it | Register | Length/Format Norms |
+| :---- | :---- | :---- | :---- |
+| MoET Circulars | Ministry Officials | State Bureaucratic | Long, highly structured legal documents heavily utilizing state lexicon. |
+| Textbooks | Curriculum Board | Formal, pedagogical | Defined explicitly by the parameters of Chương trình giáo dục phổ thông 201827. |
+| Exam Instructions | National Exam Board | Imperative, authoritative | Standardized protocols and procedural instructions for high-stakes testing. |
+
+### **Register and address**
+
+Government-facing education content operates on the most rigid, formalized register in the Vietnamese language. It requires absolute adherence to state-mandated terminology, utilizing a completely impersonal, third-person perspective. The language focuses heavily on policy goals, structural frameworks, and standardized outcomes.
+
+### **Terminology**
+
+| EN | ❌ Calque / Unnatural | ✅ Native / Statutory | Register |
+| :---- | :---- | :---- | :---- |
+| Competencies | Khả năng | Năng lực | Curriculum 201827 |
+| Qualities | Phẩm chất tốt | Phẩm chất | Curriculum 201827 |
+| Learning Requirements | Yêu cầu học tập | Yêu cầu cần đạt | Curriculum 201827 |
+
+### **Regulated and restricted language**
+
+| Phrase/Concept | Instrument | Article | Effective Date | Penalty / Issue | Safe Rewrite |
+| :---- | :---- | :---- | :---- | :---- | :---- |
+| General Education Curriculum | Thông tư 32/2018/TT-BGDĐT | General | Feb 15, 2019 | Non-compliance with standardized pedagogical objectives. | Align copy with Chương trình giáo dục phổ thông 2018 standards27. |
+
+### **Formatting conventions**
+
+* Extensive use of numbered lists, sub-clauses, and strict legal formatting hierarchies (Điều, Khoản, Điểm).
+
+### **Observed failure modes**
+
+None that warrant programmatic intervention. While the terminology (e.g., Yêu cầu cần đạt / "Learning requirements", Phẩm chất / "Qualities", Năng lực cốt lõi / "Core competencies")27 is highly standardized, unguided language models already excel at translating and generating this kind of dry, formal, government-register prose.
+
+### **Proposed lint rules**
+
+**Recommendation: DO NOT BUILD.**  
+The empirical evidence strongly suggests that this sub-area is not viable for inclusion in the skill framework. The rationale is threefold:
+
+> 1. **Low Frequency of Use:** The average enterprise or individual utilizing the Claude platform does not write national textbooks or draft Ministry of Education and Training circulars. The target audience for this specific capability is statistically negligible.  
+> 2. **Thin Checkable Surface:** There are no frequent, observable, catastrophic failure modes in this register that parallel the hallucination of grading scales or the generation of illegal advertising.  
+> 3. **Absence of Specialized Syntax:** Unlike Zalo parent messages or EdTech interfaces, textbook and government prose does not require a highly sensitive, context-dependent pronoun matrix that LLMs typically fail to navigate.
+
+### **Eval pairs**
+
+*(Omitted due to "Do Not Build" recommendation)*
+
+### **Open questions for a native speaker**
+
+*(Omitted due to "Do Not Build" recommendation)*
+
+## **Cross-cutting findings**
+
+> 1. **Architecture.** The Education domain is profoundly fragmented across distinct institutional, commercial, and technical boundaries. It cannot and should not be folded entirely into one existing skill. EdTech UI and marketing copy map perfectly onto the existing vietnamese-tech-writing and vietnamese-business-comms skills, respectively. However, K-12 school communications (report cards, parent notices) and University administration (transcripts, syllabi) operate on highly specific, legally binding vocabularies (e.g., Thông tư 22, Thông tư 27\) that overlap with nothing else in the repository. The required architecture is to create a new, standalone vietnamese-education-copy skill, while explicitly excluding UI and marketing via the description frontmatter to prevent trigger collisions. The vietnamese-business-comms compliance engine must simultaneously be updated to reflect the new 2024–2026 tutoring laws.  
+> 2. **Register-matrix extension.** The education domain necessitates specialized rows in the shared/references/register-matrix.md file. Specifically: EDU\_TEACHER\_K12 (thầy/cô ↔ em), EDU\_TEACHER\_PRI (thầy/cô ↔ con), EDU\_ADMIN\_UNI (nhà trường ↔ sinh viên), and EDU\_SCHOOL\_PAR (nhà trường ↔ quý phụ huynh). These additions do not conflict with existing constraints because they are tightly bound to the educational contexts uniquely defined in the new skill's domain space.  
+> 3. **Validator reuse.** The new skill will heavily rely on the shared NUM00x (locale formatting) and NFC001 (Unicode) engines already present in the repository. A new scripts/rules\_education.py hook is required to enforce the strict TT 22 / TT 27 grading terminology (EDU001, EDU003) and diploma legality rules (EDU004). Crucially, these rules must be gated by a \--doctype flag (e.g., \--doctype secondary-report-card vs \--doctype higher-ed) because the evaluation term "Tốt" is legally valid for a 9th grader but a university transcript requires the higher-ed specific "Giỏi" or "Xuất sắc".  
+> 4. **Failure-mode evidence.** Unguided large language models fail predictably across three distinct vectors when attempting to generate Vietnamese educational copy:  
+   * *Linguistic:* Lexical interference causes the model to use bạn to address a student as a teacher, violating deeply ingrained cultural hierarchy and Confucius-influenced social norms.  
+   * *Administrative:* Models hallucinate abolished scales like "Học sinh Tiên tiến"4 or use numeric GPA formats incorrectly translated from English (GPA 3.8/4.0 instead of 3,8/4,0 or mapped to Xuất sắc)6, rendering the output administratively void.  
+   * *Legal:* Models willingly write advertisements for primary school tutoring (banned under TT 29/2024)1 and make absolute guarantees (banned under NĐ 87/2026)3, demonstrating a complete lack of awareness regarding recent Vietnamese legislative shifts.  
+> 5. **Prioritisation.** K-12 communications and Higher Education represent the highest value to build due to their dense concentration of hard, checkable administrative rules and frequent usage. EdTech UI and Tutoring marketing are high-value areas but must be delegated to existing skills to maintain architectural integrity. Government and Curriculum prose is a strict "do not build" due to thin checkable surfaces and negligible user demand.
+
+## **Sources**
+
+| URL / Source | Publisher | Date Accessed | Primary/Secondary | Confidence |
+| :---- | :---- | :---- | :---- | :---- |
+| Thông tư 29/2024/TT-BGDĐT | Bộ GD&ĐT (thuvienphapluat.vn) | Aug 2026 | Primary | High (Effective Feb 14, 2025\)1 |
+| Nghị định 87/2026/NĐ-CP | Chính phủ (thuvienphapluat.vn) | Aug 2026 | Primary | High (Effective May 15, 2026\)2 |
+| Thông tư 22/2021/TT-BGDĐT | Bộ GD&ĐT (thuvienphapluat.vn) | Aug 2026 | Primary | High4 |
+| Thông tư 27/2020/TT-BGDĐT | Bộ GD&ĐT (thuvienphapluat.vn) | Aug 2026 | Primary | High5 |
+| Thông tư 08/2021/TT-BGDĐT | Bộ GD&ĐT (thuvienphapluat.vn) | Aug 2026 | Primary | High6 |
+| Thông tư 21/2019/TT-BGDĐT | Bộ GD&ĐT (thuvienphapluat.vn) | Aug 2026 | Primary | High18 |
+| Thông tư 32/2018/TT-BGDĐT (CT GDPT 2018\) | Bộ GD&ĐT (thuvienphapluat.vn) | Aug 2026 | Primary | High27 |
+| Luật Bảo vệ quyền lợi người tiêu dùng (19/2023/QH15) | Quốc hội (thuvienphapluat.vn) | Aug 2026 | Primary | High (Effective July 1, 2024\)25 |
+| VioEdu User Guides | FPT / VioEdu | Aug 2026 | Secondary | Medium (Good for observing live register usage)7 |
+
+## **Caveats and what I could not verify**
+
+* **Enforcement of TT 29/2024 (Tutoring Ban):** While the law strictly prohibits extra academic classes for primary students, secondary sources indicate significant "lách luật" (loophole exploitation) by rebranding math or language classes as "life skills" or "enrichment programs"24. I could not verify if automated ad moderation systems strictly penalize the rebranded terms in practice, or if the government turns a blind eye to thinly veiled rebranding. The lint rule currently flags direct mentions of "dạy thêm" alongside primary grades to be safe.  
+* **GPA Localization:** I could not verify if modern Vietnamese universities uniformly enforce the translation of the acronym "GPA" into ĐTBTL (Điểm trung bình tích lũy) on English-to-Vietnamese transcript translations, or if GPA has become universally accepted as a loanword in domestic academic administration. A native university registrar should review EDU006.  
+* **Subtitle Limits:** While 42 characters per line is cited as a standard constraint for subtitling19, variations exist between global VOD platforms (like Netflix) and local EdTech web players. The proposed EDU008 rule uses 42 as a strict baseline, which might cause false positives if an EdTech client uses a responsive player supporting up to 50 characters to account for the natural textual expansion of translated Vietnamese.
+
+#### **Works cited**
+
+> 1. thông tư 29 về dạy thêm học thêm | AI Hay \- Hỏi ngay đáp hay, [https://ai-hay.vn/thong-tu-29-ve-day-them-hoc-them-pN1UmIvyDam](https://ai-hay.vn/thong-tu-29-ve-day-them-hoc-them-pN1UmIvyDam)  
+> 2. vi phạm quy định về tổ chức lễ hội \- AI Hay, [https://ai-hay.vn/vi-pham-quy-dinh-ve-to-chuc-le-hoi-pN1UmIuIeEy](https://ai-hay.vn/vi-pham-quy-dinh-ve-to-chuc-le-hoi-pN1UmIuIeEy)  
+> 3. Quảng cáo sai sự thật trên mạng xã hội sẽ bị xử phạt nặng hơn trước, [https://ai-hay.vn/quang-cao-sai-su-that-tren-mang-xa-hoi-se-bi-xu-phat-nang-hon-truoc-pN1UmIoTv5G](https://ai-hay.vn/quang-cao-sai-su-that-tren-mang-xa-hoi-se-bi-xu-phat-nang-hon-truoc-pN1UmIoTv5G)  
+> 4. Sửa đổi thông tư 22: kiểm tra, đánh giá học sinh \- AI Hay, [https://ai-hay.vn/sua-doi-thong-tu-22-kiem-tra-danh-gia-hoc-sinh-pN1UmIvUYwa](https://ai-hay.vn/sua-doi-thong-tu-22-kiem-tra-danh-gia-hoc-sinh-pN1UmIvUYwa)  
+> 5. Thông tư 27: Đánh giá và Khen thưởng Học sinh Tiểu học thế nào?, [https://ai-hay.vn/thong-tu-27-danh-gia-va-khen-thuong-hoc-sinh-tieu-hoc-the-nao-pN1UmImIfiC](https://ai-hay.vn/thong-tu-27-danh-gia-va-khen-thuong-hoc-sinh-tieu-hoc-the-nao-pN1UmImIfiC)  
+> 6. Công thức quy đổi thang điểm 10 sang thang điểm 4 đại học năm, [https://www.studocu.vn/vn/document/truong-dai-hoc-mo-ha-noi/kinh-te-chinh-tri/cong-thuc-quy-doi-thang-diem-10-sang-thang-diem-4-dai-hoc-nam-2024-2025-quy-doi-diem-he-10-sang-he-4-dai-hoc-the-nao/138657787](https://www.studocu.vn/vn/document/truong-dai-hoc-mo-ha-noi/kinh-te-chinh-tri/cong-thuc-quy-doi-thang-diem-10-sang-thang-diem-4-dai-hoc-nam-2024-2025-quy-doi-diem-he-10-sang-he-4-dai-hoc-the-nao/138657787)  
+> 7. HƯỚNG DẪN ĐĂNG KÝ TÀI KHOẢN VIOEDU \- VIO NEWS, [https://tintuc.vio.edu.vn/huong-dan-dang-ky-tai-khoan-vioedu/](https://tintuc.vio.edu.vn/huong-dan-dang-ky-tai-khoan-vioedu/)  
+> 8. Cách đăng nhập VioEdu online cho phụ huynh, học sinh \- CellphoneS, [https://cellphones.com.vn/sforum/cach-dang-ky-dang-nhap-vioedu-online](https://cellphones.com.vn/sforum/cach-dang-ky-dang-nhap-vioedu-online)  
+> 9. Lớp 8B: Phụ huynh, giáo viên, xã hội thiếu phối hợp \- AI Hay, [https://ai-hay.vn/lop-8b-phu-huynh-giao-vien-xa-hoi-thieu-phoi-hop-pN1UmI\_0XiW](https://ai-hay.vn/lop-8b-phu-huynh-giao-vien-xa-hoi-thieu-phoi-hop-pN1UmI_0XiW)  
+> 10. Lớp 8B: Phụ huynh, giáo viên thiếu phối hợp, học sinh sa sút \- AI Hay, [https://ai-hay.vn/lop-8b-phu-huynh-giao-vien-thieu-phoi-hop-hoc-sinh-sa-sut-pN1UmIyuieq](https://ai-hay.vn/lop-8b-phu-huynh-giao-vien-thieu-phoi-hop-hoc-sinh-sa-sut-pN1UmIyuieq)  
+> 11. Tải eNetViet, Phần mềm giao bài tập về nhà cho học sinh, [https://taimienphi.vn/download-enetviet-76290](https://taimienphi.vn/download-enetviet-76290)  
+> 12. Làm sao để giúp học sinh lớp 2 tiến bộ môn Toán và Tiếng Việt?, [https://ai-hay.vn/lam-sao-de-giup-hoc-sinh-lop-2-tien-bo-mon-toan-va-tieng-viet-pN1UmInA4VG](https://ai-hay.vn/lam-sao-de-giup-hoc-sinh-lop-2-tien-bo-mon-toan-va-tieng-viet-pN1UmInA4VG)  
+> 13. Nhận xét học sinh THCS theo Thông tư 22: Giáo viên cần lưu ý, [https://ai-hay.vn/nhan-xet-hoc-sinh-thcs-theo-thong-tu-22-giao-vien-can-luu-y-nhung-gi-pN1UmInfDha](https://ai-hay.vn/nhan-xet-hoc-sinh-thcs-theo-thong-tu-22-giao-vien-can-luu-y-nhung-gi-pN1UmInfDha)  
+> 14. Đánh giá kết quả học tập học sinh THCS, THPT năm học 2025-2026, [https://aigiaoduc.thuvienphapluat.vn/danh-gia-ket-qua-hoc-tap-hoc-sinh-thcs-thpt-nam-hoc-20252026-nhu-the-nao-1925tt.html](https://aigiaoduc.thuvienphapluat.vn/danh-gia-ket-qua-hoc-tap-hoc-sinh-thcs-thpt-nam-hoc-20252026-nhu-the-nao-1925tt.html)  
+> 15. Thông tư 22/2021/TT-BGDĐT: Nhận xét học bạ, sổ điểm THCS như, [https://ai-hay.vn/thong-tu-22-2021-tt-bgddt-nhan-xet-hoc-ba-so-diem-thcs-nhu-the-nao-pN1UmImJ9gu](https://ai-hay.vn/thong-tu-22-2021-tt-bgddt-nhan-xet-hoc-ba-so-diem-thcs-nhu-the-nao-pN1UmImJ9gu)  
+> 16. TT 22 không còn quy định điểm trung bình năm, quy chế thi tốt, [https://giaoduc.net.vn/tt-22-khong-con-quy-dinh-diem-trung-binh-nam-quy-che-thi-tot-nghiep-can-bo-sung-post245681.gd](https://giaoduc.net.vn/tt-22-khong-con-quy-dinh-diem-trung-binh-nam-quy-che-thi-tot-nghiep-can-bo-sung-post245681.gd)  
+> 17. Lớp 8B: Phụ huynh và thầy cô thiếu phối hợp \- AI Hay, [https://ai-hay.vn/lop-8b-phu-huynh-va-thay-co-thieu-phoi-hop-pN1UmIz24AO](https://ai-hay.vn/lop-8b-phu-huynh-va-thay-co-thieu-phoi-hop-pN1UmIz24AO)  
+> 18. Làm mất bản gốc bằng tốt nghiệp THPT thì có được cấp lại bản gốc, [https://thuviennhadat.vn/phap-luat/lam-mat-ban-goc-bang-tot-nghiep-thpt-thi-co-duoc-cap-lai-ban-goc-khong-603445.html](https://thuviennhadat.vn/phap-luat/lam-mat-ban-goc-bang-tot-nghiep-thpt-thi-co-duoc-cap-lai-ban-goc-khong-603445.html)  
+> 19. Dịch Phụ Đề Video Và Lồng Tiếng Video Chuyên Nghiệp, [https://dichthuatplg.com/dich-phu-de-video-long-tieng-video/](https://dichthuatplg.com/dich-phu-de-video-long-tieng-video/)  
+> 20. Hướng dẫn sử dụng VioEdu dành cho phụ huynh \- VietNamNet, [https://vietnamnet.vn/huong-dan-su-dung-vioedu-danh-cho-phu-huynh-i63351.html](https://vietnamnet.vn/huong-dan-su-dung-vioedu-danh-cho-phu-huynh-i63351.html)  
+> 21. Học tiếng Anh với AI: Cách ứng dụng hiệu quả và app học miễn phí, [https://vn.elsaspeak.com/hoc-tieng-anh-voi-ai/](https://vn.elsaspeak.com/hoc-tieng-anh-voi-ai/)  
+> 22. Hướng dẫn chung \- Đăng kí / Đăng nhập \- VIO NEWS \- VioEdu, [https://tintuc.vio.edu.vn/huong-dan-chung/](https://tintuc.vio.edu.vn/huong-dan-chung/)  
+> 23. Giáo viên dạy anh văn có được kinh doanh dạy thêm tại nhà không, [https://ai-hay.vn/giao-vien-day-anh-van-co-duoc-kinh-doanh-day-them-tai-nha-khong-pN1UmIxKoeu](https://ai-hay.vn/giao-vien-day-anh-van-co-duoc-kinh-doanh-day-them-tai-nha-khong-pN1UmIxKoeu)  
+> 24. Có cấm dạy thêm ở tiểu học hay không | AI Hay \- Hỏi ngay đáp hay, [https://ai-hay.vn/co-cam-day-them-o-tieu-hoc-hay-khong-pN1UmHslzj0](https://ai-hay.vn/co-cam-day-them-o-tieu-hoc-hay-khong-pN1UmHslzj0)  
+> 25. Lỡ ký hợp đồng sở hữu kỳ nghỉ, làm sao thoát? \- An Toàn Tài Chính, [https://www.antoantaichinh.com/lo-ky-hop-dong-ky-nghi-lam-sao-thoat/](https://www.antoantaichinh.com/lo-ky-hop-dong-ky-nghi-lam-sao-thoat/)  
+> 26. CHƯƠNG 1: LÝ LUẬN CHUNG VỀ BẢO VỆ QUYỀN LỢI NGƯỜI, [https://www.studocu.vn/vn/document/truong-dai-hoc-cong-thuong-tp-ho-chi-minh/thuong-mai-dien-tu/chuong-1-ly-luan-chung-ve-bao-ve-quyen-loi-nguoi-tieu-dung-trong-tmdt/162436505](https://www.studocu.vn/vn/document/truong-dai-hoc-cong-thuong-tp-ho-chi-minh/thuong-mai-dien-tu/chuong-1-ly-luan-chung-ve-bao-ve-quyen-loi-nguoi-tieu-dung-trong-tmdt/162436505)  
+> 27. Thông tư 32/2018/TT-BGDĐT ban hành Chương trình giáo dục phổ, [https://luatvietnam.vn/giao-duc/thong-tu-32-2018-tt-bgddt-ban-hanh-chuong-trinh-giao-duc-pho-thong-moi-169745-d1.html](https://luatvietnam.vn/giao-duc/thong-tu-32-2018-tt-bgddt-ban-hanh-chuong-trinh-giao-duc-pho-thong-moi-169745-d1.html)  
+> 28. Tìm link tải Thông tư 32/2018/TT-BGDĐT \- AI Hay, [https://ai-hay.vn/tim-link-tai-thong-tu-32-2018-tt-bgddt-pN1UmIxX11q](https://ai-hay.vn/tim-link-tai-thong-tu-32-2018-tt-bgddt-pN1UmIxX11q)  
+> 29. Nhà nước cấm dạy thêm, vẫn có người lách luật \- AI Hay, [https://ai-hay.vn/nha-nuoc-cam-day-them-van-co-nguoi-lach-luat-pN1UmIvHwSa](https://ai-hay.vn/nha-nuoc-cam-day-them-van-co-nguoi-lach-luat-pN1UmIvHwSa)  
+> 30. Chương 6: Dịch Thuật Phim \- Âm Thanh Thành Hình (Môn Dịch Thuật), [https://www.studocu.vn/vn/document/truong-dai-hoc-su-pham-thanh-pho-ho-chi-minh/ly-thuyet-dich/chuong-6-dich-thuat-phim-am-thanh-thanh-hinh-mon-dich-thuat/159651703](https://www.studocu.vn/vn/document/truong-dai-hoc-su-pham-thanh-pho-ho-chi-minh/ly-thuyet-dich/chuong-6-dich-thuat-phim-am-thanh-thanh-hinh-mon-dich-thuat/159651703)
