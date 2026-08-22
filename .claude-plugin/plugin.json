@@ -1,7 +1,7 @@
 {
   "name": "vietnamese-language-skill",
-  "version": "2.0.0",
-  "description": "Agent Skills for native-quality Vietnamese (vi-VN) writing across landing pages, engineering and product docs, marketing and sales, and regulated finance. Fixes translationese, wrong register, calqued terminology, illegal advertising and financial-promotion claims, and broken VND/date/Unicode formatting, with a dependency-free validator.",
+  "version": "2.1.0",
+  "description": "Agent Skills for native-quality Vietnamese (vi-VN) writing across landing pages, engineering and product docs, marketing and sales, regulated finance, and school and academic writing. Fixes translationese, wrong register, calqued terminology, illegal advertising and financial-promotion claims, abolished grading terms, and broken VND/date/Unicode formatting, with a dependency-free validator.",
   "author": {
     "name": "vietnamese-language-skill contributors",
     "url": "https://github.com/trussary/vietnamese-language-skill"
@@ -23,6 +23,7 @@
     "zalo",
     "finance",
     "e-invoice",
+    "education",
     "compliance",
     "translation",
     "linter"

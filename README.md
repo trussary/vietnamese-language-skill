@@ -63,6 +63,19 @@ The left column is not a strawman. It is what you get by default — one example
 + Báo cáo tình hình tài chính tại ngày 31/12/2026
 ```
 
+`vietnamese-education-copy`
+
+```diff
+- Học sinh đạt loại Giỏi trong học kỳ này.
++ Học sinh đạt mức Tốt trong học kỳ này.
+
+- Bạn cần hoàn thành bài tập trước giờ học ngày mai.
++ Em cần hoàn thành bài tập trước giờ học ngày mai.
+
+- GPA của sinh viên là 3.6/4.0.
++ Điểm trung bình tích lũy của sinh viên là 3,6/4,0.
+```
+
 ## What is in here
 
 | Skill | What it does |
@@ -71,6 +84,7 @@ The left column is not a strawman. It is what you get by default — one example
 | [`vietnamese-tech-writing`](skills/vietnamese-tech-writing/) | Engineering and product docs — commits, PRs, RFCs, postmortems, runbooks, READMEs, API docs, UI microcopy, i18n files, PRDs, release notes, surveys. Code-switching rules and vi-VN i18n hazards. |
 | [`vietnamese-business-comms`](skills/vietnamese-business-comms/) | Marketing and sales — email campaigns, Zalo ZNS/ZBS, ads, marketplace listings, press releases, cold outreach, báo giá, dunning, Tết greetings. B2B xưng hô and promotion law. |
 | [`vietnamese-finance-copy`](skills/vietnamese-finance-copy/) | Regulated finance — hóa đơn điện tử, báo cáo tài chính, investor updates, fintech and insurance copy, credit disclosures. Thông tư 99/2025 terminology and financial-promotion limits. |
+| [`vietnamese-education-copy`](skills/vietnamese-education-copy/) | School and academic writing — K-12 report-card remarks, sổ liên lạc and parent notices, university syllabi, transcripts, and diploma reissuance. MoET statutory grading terms and the teacher/student/parent register matrix. |
 
 They share one validator engine and four references (register matrix, Unicode and tone marks,
 locale formatting, compliance), which live in [`shared/`](shared/) and are copied into each
@@ -105,6 +119,7 @@ npx skills use trussary/vietnamese-language-skill@vietnamese-landing-copy
 npx skills use trussary/vietnamese-language-skill@vietnamese-tech-writing
 npx skills use trussary/vietnamese-language-skill@vietnamese-business-comms
 npx skills use trussary/vietnamese-language-skill@vietnamese-finance-copy
+npx skills use trussary/vietnamese-language-skill@vietnamese-education-copy
 ```
 
 ### Claude Code plugin
@@ -149,6 +164,8 @@ the keywords route to the right skill:
 
 > Can we advertise a guaranteed 12% annual return in Vietnam?
 
+> Viết nhận xét học bạ cho học sinh lớp 9 môn Toán
+
 Each skill's linter runs directly too, with no Claude involved:
 
 ```bash
@@ -156,6 +173,7 @@ python skills/vietnamese-landing-copy/scripts/validate_copy.py copy.md --registe
 python skills/vietnamese-tech-writing/scripts/validate_copy.py CHANGELOG.md --doctype commit
 python skills/vietnamese-business-comms/scripts/validate_copy.py email.md --doctype cold-outreach
 python skills/vietnamese-finance-copy/scripts/validate_copy.py bctc.md --doctype statement
+python skills/vietnamese-education-copy/scripts/validate_copy.py hoc-ba.md --doctype secondary-report-card
 ```
 
 ```text
@@ -193,6 +211,7 @@ everything it can emit:
 | `vietnamese-tech-writing` | `ENG001` non-ASCII commit subject, branch or identifier · `ENG003` direct address in an RFC or postmortem · `ENG007` hedged runbook step · `PROD002` agree/disagree survey scale · `PROD003` app-store metadata over the platform limit · `PROD004` consent copy with no purpose |
 | `vietnamese-business-comms` | `ZNS001` marketing in a transactional Zalo template · `ZNS002` template over 400 characters · `MKT001` ALL-CAPS or emoji in a marketplace title · `MKT002` discount over the 50% ceiling · `SALES001` casual pronoun in B2B · `SALES003` outreach with no greeting · `SALES004` quote missing VAT or validity · `SPAM001` bulk message with no opt-out |
 | `vietnamese-finance-copy` | `FIN001` guaranteed-return language · `FIN002` promotional rate with no total-cost disclosure · `FIN005` statement table with no `Đơn vị tính` · `FIN006` minus-signed negative · `FIN007` invoice missing `MST` or `thuế GTGT` |
+| `vietnamese-education-copy` | `EDU001` abolished secondary grading term · `EDU002` `bạn` addressing a student · `EDU003` primary report-card calque for `cần cố gắng` · `EDU005` `tín dụng` for academic credit · `EDU006` GPA with a dot decimal |
 
 **Rules that only make sense for one kind of document are gated behind `--doctype` and stay
 silent without it.** A 400-character limit is right for a Zalo template and nonsense for a
@@ -264,6 +283,11 @@ three newer skills — genre inventories, register deltas, regulated-language ta
 explicit list of what could not be verified.
 [`research/expansion-plan.md`](research/expansion-plan.md) is how that research was turned into
 the current layout, including why the build order was inverted.
+
+[`research/education-research`](research/education-research) is the research behind
+`vietnamese-education-copy` — why K-12 and higher-education writing became a standalone skill
+while EdTech UI and tutoring/study-abroad advertising were routed to the two skills that already
+own those registers.
 
 ## Licence
 

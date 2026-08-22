@@ -176,6 +176,46 @@ promotion — not every document with a price in it.
 
 ---
 
+# `vietnamese-education-copy`
+
+## Should trigger (10)
+
+| # | Prompt | Why it should |
+|---|---|---|
+| 1 | Viết nhận xét học bạ cho học sinh lớp 9 môn Toán | Core case: secondary report-card remark |
+| 2 | Soạn sổ liên lạc gửi phụ huynh về buổi họp tuần tới | Parent-facing school communication |
+| 3 | Write the syllabus for an undergraduate economics course | University syllabus (đề cương) |
+| 4 | Dịch bảng điểm đại học này sang tiếng Việt, kiểm tra định dạng GPA | Transcript and GPA locale formatting |
+| 5 | A student lost their diploma — what can the university legally reissue? | Diploma-reissuance terminology |
+| 6 | Draft a Vietnamese absence notice from a teacher to a parent | Disciplinary/absence notice register |
+| 7 | What's the correct way for a teacher to address a 3rd grader in Vietnamese? | Primary vs. secondary pronoun choice |
+| 8 | Viết thông báo đăng ký học phần cho sinh viên năm nhất | University registration announcement |
+| 9 | Review this Vietnamese report card — does it use the right grading terms? | Statutory grading-term check |
+| 10 | Soạn lời nhận xét cuối năm cho học sinh tiểu học | Primary-school qualitative assessment |
+
+## Should NOT trigger (10)
+
+| # | Prompt | Why it should not |
+|---|---|---|
+| 11 | Write the onboarding flow copy for our language-learning app | EdTech product UI — `vietnamese-tech-writing` |
+| 12 | Viết quảng cáo Facebook cho trung tâm luyện thi IELTS | Tutoring-centre advertising — `vietnamese-business-comms` |
+| 13 | Translate the subtitles for this online course video | E-learning subtitles — `vietnamese-tech-writing` |
+| 14 | Soạn tin nhắn Zalo quảng bá khóa học tiếng Anh giảm 30% | Marketing campaign — `vietnamese-business-comms` |
+| 15 | Format this Vietnamese tuition invoice with VAT fields | Regulated finance — `vietnamese-finance-copy` |
+| 16 | Viết landing page giới thiệu trường mầm non | Landing-page marketing — `vietnamese-landing-copy` |
+| 17 | What year was the current Vietnamese national curriculum introduced? | A history question, not a writing task |
+| 18 | Review my Python grading script for bugs | Unrelated |
+| 19 | Summarize this Vietnamese education news article | Reading comprehension, not authoring |
+| 20 | Explain how Vietnamese university credit hours work | Explanatory, not authoring |
+
+Prompts 11–14 are the sharpest routing tests here: an EdTech app, a tutoring ad, a course
+subtitle, and a course-promotion broadcast all mention "học" or "khóa học" the way a genuine
+school document does, but none of them are school or academic administration — they are
+software UI, advertising, and localization wearing an education topic, and belong to the two
+skills that already own those registers.
+
+---
+
 ## Results log
 
 | Date | Skill | Version | Score | Notes |
@@ -184,3 +224,4 @@ promotion — not every document with a price in it.
 | _not yet run_ | vietnamese-tech-writing | 1.0.0 | — | Run before tagging a release |
 | _not yet run_ | vietnamese-business-comms | 1.0.0 | — | Run before tagging a release |
 | _not yet run_ | vietnamese-finance-copy | 1.0.0 | — | Run before tagging a release |
+| _not yet run_ | vietnamese-education-copy | 1.0.0 | — | Run before tagging a release |

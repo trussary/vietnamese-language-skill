@@ -4,6 +4,34 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] — 2026-08-22
+
+Expansion from four skills to five, adding school and academic writing.
+
+### Added
+
+- **`vietnamese-education-copy` skill** — K-12 report-card remarks and học bạ entries, sổ liên
+  lạc entries and school-to-parent broadcasts, disciplinary and absence notices, university
+  syllabi and course registration, transcripts and GPA statements, and diploma reissuance.
+  Enforces MoET statutory grading terminology (Thông tư 22/2021, 27/2020, 08/2021, 21/2019).
+  Five doctype-gated rules: `EDU001`, `EDU002`, `EDU003`, `EDU005`, `EDU006`. 18 eval pairs.
+  EdTech product UI and tutoring-centre/study-abroad advertising were deliberately **not**
+  folded into this skill — they route to `vietnamese-tech-writing` and
+  `vietnamese-business-comms`, which already own those registers.
+- **Four new register-matrix rows** — `edu-k12` (`em`), `edu-k12-primary` (`con`), `edu-parent`
+  (`quý phụ huynh`), and `edu-uni` (no direct address, third-person `sinh viên`), plus a
+  register-matrix section on teacher self-reference and the primary/secondary address line.
+- **`research/education-research`** — the deep-research report behind this skill: genre
+  inventories, register deltas, statutory-terminology tables, regulated-language findings for
+  the 2024–2026 private-tutoring reform, and the reasoning for routing EdTech and tutoring
+  marketing to the two existing skills rather than building them here.
+- **`research/education-research-prompt.md`** — the deep-research brief that produced the report
+  above, for the same audit trail the four earlier skills have.
+
+### Changed
+
+- `tools/build_examples.py` gained `k12` and `higher-ed` categories.
+
 ## [2.0.0] — 2026-08-20
 
 Expansion from one skill to four, plus the repo-level work that made a second skill
