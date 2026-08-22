@@ -55,6 +55,14 @@ KEYWORD_OWNERS = {
     "thuế": "vietnamese-finance-copy",
     "lãi suất": "vietnamese-finance-copy",
     "invoice": "vietnamese-finance-copy",
+
+    # vietnamese-education-copy
+    "sổ liên lạc": "vietnamese-education-copy",
+    "học bạ": "vietnamese-education-copy",
+    "quý phụ huynh": "vietnamese-education-copy",
+    "syllabi": "vietnamese-education-copy",
+    "transcripts": "vietnamese-education-copy",
+    "diploma": "vietnamese-education-copy",
 }
 
 

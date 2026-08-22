@@ -1,4 +1,4 @@
-<!-- GENERATED FILE — do not edit. Source: shared/references/register-matrix.md (sha256 1fabf7484f5652c8). Edit the source and run `python tools/sync_shared.py`. -->
+<!-- GENERATED FILE — do not edit. Source: shared/references/register-matrix.md (sha256 31697ca9d0ed3f71). Edit the source and run `python tools/sync_shared.py`. -->
 <!-- vlc-disable: TONE001 -->
 
 # Register matrix — who the copy addresses
@@ -33,6 +33,10 @@ it; none of them redefine the matrix.
 | `eng-impersonal` | | `bạn`, `quý khách`, `quý vị` | RFCs, design docs, postmortems, runbooks — no direct address at all |
 | `eng-readme` | `bạn` | `quý khách`, `quý vị` | READMEs, tutorials, API docs, user-facing product and error copy |
 | `finance-formal` | `quý khách` | `bạn`, `mình` | Statements, disclosures, financial promotion — a hard formality floor |
+| `edu-k12` | `em` | `bạn`, `quý khách`, `quý vị` | Secondary (THCS/THPT) teacher-to-student — assignments, feedback, học bạ remarks |
+| `edu-k12-primary` | `con` | `bạn`, `quý khách`, `quý vị` | Primary (tiểu học) teacher-to-student — pastoral, not yet the `em` register |
+| `edu-parent` | `quý phụ huynh` | `bạn`, `mình`, `quý khách` | School-to-parent — sổ liên lạc, Zalo broadcasts, report-card notices |
+| `edu-uni` | | `bạn`, `con`, `em` | University administrative prose — transcripts, syllabi, registration notices, addressed in the third person as `sinh viên` |
 
 ## Self-reference
 
@@ -59,6 +63,18 @@ brand, sets the register there.
 `khách hàng`, `người dùng`, `nhà đầu tư` are third-person nouns, not forms of address. Use
 them in policy text, terms, and descriptive prose. `Khách hàng hãy đăng ký` is wrong; write
 `Quý khách vui lòng đăng ký`.
+
+## Education: teacher, student, and parent
+
+A teacher's self-reference is `thầy`/`cô`, not `tôi` or `mình` — `thầy chúc mừng em` reads as
+warm and correct; `tôi chúc mừng em` reads like a stranger. The `em`/`con` line is drawn at
+schooling stage, not the student's actual age: primary (tiểu học) students are `con` even when
+the teacher is young, and secondary (THCS/THPT) students are `em` even when the teacher is
+close to them in age. `bạn` for a student, in a teacher's voice, is the single most common
+machine-translation tell in Vietnamese school writing — see the education skill for the doctype-
+gated rule. `quý phụ huynh` is a collective, register-locked address; it does not soften to
+`anh/chị` unless the writer is a teacher replying to one specific, already-known parent in a
+1:1 thread.
 
 ## Adding a register profile
 

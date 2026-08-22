@@ -65,6 +65,19 @@ skill này. Dưới đây là một ví dụ cho mỗi skill:
 + Báo cáo tình hình tài chính tại ngày 31/12/2026
 ```
 
+`vietnamese-education-copy`
+
+```diff
+- Học sinh đạt loại Giỏi trong học kỳ này.
++ Học sinh đạt mức Tốt trong học kỳ này.
+
+- Bạn cần hoàn thành bài tập trước giờ học ngày mai.
++ Em cần hoàn thành bài tập trước giờ học ngày mai.
+
+- GPA của sinh viên là 3.6/4.0.
++ Điểm trung bình tích lũy của sinh viên là 3,6/4,0.
+```
+
 ## Repo này có gì
 
 | Skill | Chức năng |
@@ -73,6 +86,7 @@ skill này. Dưới đây là một ví dụ cho mỗi skill:
 | [`vietnamese-tech-writing`](skills/vietnamese-tech-writing/) | Tài liệu kỹ thuật và sản phẩm — commit, PR, RFC, postmortem, runbook, README, API docs, UI microcopy, file i18n, PRD, release notes, khảo sát. Có quy tắc code-switching và các rủi ro i18n riêng của tiếng Việt (vi-VN). |
 | [`vietnamese-business-comms`](skills/vietnamese-business-comms/) | Marketing và sales — email campaign, Zalo ZNS/ZBS, quảng cáo, tin đăng marketplace, thông cáo báo chí, cold outreach, báo giá, nhắc nợ, lời chúc Tết. Có quy tắc xưng hô B2B và luật quảng cáo. |
 | [`vietnamese-finance-copy`](skills/vietnamese-finance-copy/) | Tài chính — lĩnh vực chịu quản lý chặt: hóa đơn điện tử, báo cáo tài chính, bản tin nhà đầu tư, nội dung fintech và bảo hiểm, thông báo tín dụng. Có thuật ngữ theo Thông tư 99/2025 và giới hạn khi quảng cáo tài chính. |
+| [`vietnamese-education-copy`](skills/vietnamese-education-copy/) | Văn bản trường học và học thuật — nhận xét học bạ K-12, sổ liên lạc và thông báo phụ huynh, đề cương môn học đại học, bảng điểm và cấp lại văn bằng. Có thuật ngữ chấm điểm theo Bộ GD&ĐT và ma trận xưng hô giáo viên/học sinh/phụ huynh. |
 
 Các skill dùng chung một validator engine và bốn tài liệu tham chiếu (register matrix, dấu
 thanh và Unicode, định dạng theo locale, tuân thủ pháp luật), nằm trong [`shared/`](shared/) và
@@ -107,6 +121,7 @@ npx skills use trussary/vietnamese-language-skill@vietnamese-landing-copy
 npx skills use trussary/vietnamese-language-skill@vietnamese-tech-writing
 npx skills use trussary/vietnamese-language-skill@vietnamese-business-comms
 npx skills use trussary/vietnamese-language-skill@vietnamese-finance-copy
+npx skills use trussary/vietnamese-language-skill@vietnamese-education-copy
 ```
 
 ### Plugin cho Claude Code
@@ -153,6 +168,8 @@ như bình thường, các từ khóa sẽ tự điều hướng đến đúng s
 
 > Can we advertise a guaranteed 12% annual return in Vietnam?
 
+> Viết nhận xét học bạ cho học sinh lớp 9 môn Toán
+
 Linter của từng skill cũng chạy độc lập được, không cần Claude:
 
 ```bash
@@ -160,6 +177,7 @@ python skills/vietnamese-landing-copy/scripts/validate_copy.py copy.md --registe
 python skills/vietnamese-tech-writing/scripts/validate_copy.py CHANGELOG.md --doctype commit
 python skills/vietnamese-business-comms/scripts/validate_copy.py email.md --doctype cold-outreach
 python skills/vietnamese-finance-copy/scripts/validate_copy.py bctc.md --doctype statement
+python skills/vietnamese-education-copy/scripts/validate_copy.py hoc-ba.md --doctype secondary-report-card
 ```
 
 ```text
@@ -197,6 +215,7 @@ Mỗi skill còn bổ sung thêm rule riêng. Chạy `--list-rules` với valida
 | `vietnamese-tech-writing` | `ENG001` commit subject, branch hoặc identifier không phải ASCII · `ENG003` xưng hô trực tiếp trong RFC hoặc postmortem · `ENG007` bước runbook viết theo kiểu hedging · `PROD002` thang khảo sát đồng ý/không đồng ý · `PROD003` metadata app-store vượt giới hạn nền tảng · `PROD004` nội dung xin consent mà không nêu mục đích |
 | `vietnamese-business-comms` | `ZNS001` nội dung marketing trong template Zalo transactional · `ZNS002` template dài quá 400 ký tự · `MKT001` tiêu đề marketplace viết hoa toàn bộ hoặc chèn emoji · `MKT002` giảm giá vượt trần 50% · `SALES001` xưng hô suồng sã trong giao tiếp B2B · `SALES003` outreach không có lời chào · `SALES004` báo giá thiếu VAT hoặc thời hạn hiệu lực · `SPAM001` tin nhắn hàng loạt không có tùy chọn từ chối nhận |
 | `vietnamese-finance-copy` | `FIN001` ngôn từ cam kết lợi nhuận <!-- vlc-disable-line CAL001 --> · `FIN002` lãi suất khuyến mãi không công bố tổng chi phí · `FIN005` bảng trong báo cáo tài chính thiếu `Đơn vị tính` · `FIN006` số âm viết bằng dấu trừ · `FIN007` hóa đơn thiếu `MST` hoặc `thuế GTGT` |
+| `vietnamese-education-copy` | `EDU001` thuật ngữ xếp loại THCS/THPT đã bị bãi bỏ · `EDU002` dùng `bạn` để gọi học sinh · `EDU003` calque `cần cải thiện` trên học bạ tiểu học thay vì `cần cố gắng` · `EDU005` dùng `tín dụng` thay cho tín chỉ học tập · `EDU006` GPA viết bằng dấu chấm thập phân |
 
 **Các rule chỉ hợp lý với một loại tài liệu cụ thể được gate bằng `--doctype` và sẽ im lặng nếu
 không có flag này.** Giới hạn 400 ký tự đúng cho một template Zalo nhưng vô nghĩa với một design
@@ -269,6 +288,10 @@ sau ba skill mới hơn — danh mục thể loại văn bản, chênh lệch re
 và danh sách rõ ràng những gì chưa xác minh được.
 [`research/expansion-plan.md`](research/expansion-plan.md) mô tả cách nghiên cứu đó được chuyển
 thành cấu trúc hiện tại, kể cả lý do vì sao thứ tự build bị đảo ngược.
+
+[`research/education-research`](research/education-research) là phần nghiên cứu đứng sau
+`vietnamese-education-copy` — vì sao văn bản K-12 và đại học trở thành một skill riêng, còn UI
+EdTech và quảng cáo luyện thi/du học được chuyển cho hai skill đã sẵn có register phù hợp.
 
 ## Giấy phép
 
