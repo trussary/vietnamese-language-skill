@@ -10,7 +10,7 @@ long in Vietnamese.
 
 Every ❌ string here is a deliberate defect, so this file is exempt from its own linter.
 
-**18 pairs.** Contributions welcome — see [CONTRIBUTING.md](../../../CONTRIBUTING.md).
+**28 pairs.** Contributions welcome — see [CONTRIBUTING.md](../../../CONTRIBUTING.md).
 
 ## K-12 school communications
 
@@ -195,3 +195,105 @@ Calques both 'syllabus' (giáo trình is textbook, not syllabus) and 'learning o
 MM/dd/yyyy date format; Vietnamese uses dd/MM/yyyy.
 
 <sub>id: `edu-hed-008` · caught by: `DATE001`</sub>
+
+## EdTech product and pedagogical intelligence
+
+### Please submit your assignment before 10 PM.
+
+❌ **Học sinh vui lòng đệ trình bài tập trước 22:00.**
+
+✅ **Học sinh vui lòng nộp bài trước 22:00.**
+
+'Đệ trình bài tập' is a bureaucratic calque for 'submit an assignment'; native Vietnamese education uses 'nộp bài'.
+
+<sub>id: `edu-edt-001` · caught by: `CAL001`</sub>
+
+### Visit your learning dashboard to view your progress.
+
+❌ **Mời bạn truy cập bảng táp-lô để xem tiến độ.**
+
+✅ **Mời bạn truy cập bảng tổng quan để xem tiến độ.**
+
+'Bảng táp-lô' is a literal automotive calque for 'dashboard'; in EdTech, learning analytics screens are 'bảng tổng quan' or 'tổng quan'.
+
+<sub>id: `edu-edt-002` · caught by: `CAL001`</sub>
+
+### The app helps you track your progress every day.
+
+❌ **Hệ thống giúp bạn theo dấu sự tiến bộ mỗi ngày.**
+
+✅ **Hệ thống giúp bạn xem tiến độ học tập mỗi ngày.**
+
+'Theo dấu sự tiến bộ' is an unnatural literal calque of 'track your progress'; educational Vietnamese uses 'tiến độ học tập'.
+
+<sub>id: `edu-edt-003` · caught by: `CAL001`</sub>
+
+### She reached the top spot on the leaderboard.
+
+❌ **Bé đã vươn lên vị trí dẫn đầu trên bảng lãnh đạo.**
+
+✅ **Bé đã vươn lên vị trí dẫn đầu trên bảng xếp hạng.**
+
+'Bảng lãnh đạo' is a machine-translation calque for 'leaderboard'; standard gamification uses 'bảng xếp hạng'.
+
+<sub>id: `edu-edt-004` · caught by: `CAL001`</sub>
+
+### Teachers perform formative assessment after each lecture.
+
+❌ **Giáo viên tiến hành đánh giá định hình sau mỗi bài giảng.**
+
+✅ **Giáo viên tiến hành đánh giá quá trình sau mỗi bài giảng.**
+
+'Đánh giá định hình' is a calque; the statutory term codified by Bộ GD&ĐT is 'đánh giá quá trình' (Formative Assessment).
+
+<sub>id: `edu-edt-005` · caught by: `CAL001`</sub>
+
+### The curriculum is designed around mastery learning.
+
+❌ **Khóa học áp dụng phương pháp học tập làm chủ.**
+
+✅ **Khóa học áp dụng phương pháp học tập thông hiểu.**
+
+'Học tập làm chủ' is a literal translation error for 'Mastery Learning'; pedagogical terminology uses 'học tập thông hiểu' or 'học tới mức tinh thông'.
+
+<sub>id: `edu-edt-006` · caught by: `CAL001`</sub>
+
+### You have maintained a 7-day learning streak.
+
+❌ **Bạn đã duy trì vệt học tập 7 ngày liên tiếp.**
+
+✅ **Bạn đã duy trì chuỗi học tập 7 ngày liên tiếp.**
+
+'Vệt học tập' is a dictionary calque for 'streak'; Vietnamese learning apps use 'chuỗi học tập' or 'chuỗi ngày học'.
+
+<sub>id: `edu-edt-007` · caught by: `CAL001`</sub>
+
+### Empty state screen on student assignments tab.
+
+❌ **Trạng thái trống**
+
+✅ **Bạn chưa có bài tập nào hôm nay. Hãy bắt đầu với bài Ôn tập Thanh điệu nhé!**
+
+Displaying raw 'Trạng thái trống' or 'Không có dữ liệu' without an actionable Call to Action leaves learners stranded.
+
+<sub>id: `edu-edt-008` · caught by: `EDU007`</sub>
+
+### Pronunciation feedback for incorrect tone.
+
+❌ **Sai rồi! Bạn đã phát âm sai chữ này.**
+
+✅ **Em phát âm âm đầu rất tốt! Ở chữ 'nghĩ', em thử kéo dài giọng ở giữa một chút và hạ giọng trước khi lên cao nhé.**
+
+Blunt negative feedback ('Sai rồi') harms learner confidence; pedagogical systems apply the Sandwich Feedback model (praise effort, provide phoneme/tone guidance, encourage growth mindset).
+
+<sub>id: `edu-edt-009` · caught by: `EDU009`</sub>
+
+### Adaptive testing and scaffolding in learning analytics.
+
+❌ **Ứng dụng giúp giảm tỷ lệ rớt ra ngoài của học viên.**
+
+✅ **Ứng dụng giúp giảm tỷ lệ bỏ học của học viên.**
+
+'Tỷ lệ rớt ra ngoài' is a literal calque for 'dropout rate'; Learning Analytics uses 'tỷ lệ bỏ học' or 'tỷ lệ hao hụt'.
+
+<sub>id: `edu-edt-010` · caught by: `CAL001`</sub>

@@ -40,10 +40,11 @@ CATEGORY_TITLES = {
     "finance": "Finance and regulated financial copy",
     "k12": "K-12 school communications",
     "higher-ed": "Higher education and academic writing",
+    "edtech": "EdTech product and pedagogical intelligence",
 }
 ORDER = ["calque", "passive", "grammar", "word-order", "legal", "formatting",
          "register", "i18n", "encoding", "marketing", "sales", "engineering",
-         "product", "finance", "k12", "higher-ed"]
+         "product", "finance", "k12", "higher-ed", "edtech"]
 
 
 def title_for(category: str) -> str:

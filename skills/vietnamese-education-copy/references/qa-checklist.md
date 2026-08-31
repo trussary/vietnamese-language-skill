@@ -2,24 +2,25 @@
 
 # QA checklist — what the linter cannot check
 
-The validator catches encoding, calques, statutory grading terms, and a handful of
+The validator catches encoding, calques, statutory grading terms, EdTech translationese, and a handful of
 doctype-gated structural rules. Everything below needs a human, and most of it needs a human
-who has actually taught, studied, or worked administration inside this system — fluency in
-Vietnamese is not the same skill as knowing what a homeroom teacher would actually write.
+who has actually taught, studied, or worked in administration/EdTech inside this system — fluency in
+Vietnamese is not the same skill as knowing what a homeroom teacher or an educational AI tutor would actually write.
 
-Work top to bottom. Sections 1–2 catch more real defects than the rest combined.
+Work top to bottom. Sections 1–3 catch more real defects than the rest combined.
 
 ## 1. Register
 
 - [ ] Does the document match its register in [doc-registers.md](doc-registers.md) — schooling
       stage decides `em` vs. `con`, not the student's actual age?
 - [ ] Is `bạn` absent from every direct teacher-to-student message?
-- [ ] Does a parent-facing notice use `quý phụ huynh`, not a literal `các bậc cha mẹ`?
+- [ ] Does an EdTech AI / Mascot speak as an encouraging mentor or "người bạn lớn", calling the learner `em` / `bạn nhỏ`?
+- [ ] Does a parent-facing notice and analytics dashboard use `quý phụ huynh`, not a literal `các bậc cha mẹ`?
 - [ ] Does a teacher refer to themself as `thầy`/`cô`, never `tôi`, when addressing a student?
 - [ ] Is university administrative prose free of direct address (`bạn`, `em`, `con`) and using
       third-person `sinh viên` throughout?
 
-## 2. Statutory terms
+## 2. Statutory terms & EdTech Lexicon
 
 - [ ] Secondary (THCS/THPT) overall classification uses `Tốt` / `Khá` / `Đạt` / `Chưa đạt` —
       never `Học sinh Tiên tiến` or an overall `Giỏi`/`Trung bình`.
@@ -29,23 +30,21 @@ Work top to bottom. Sections 1–2 catch more real defects than the rest combine
 - [ ] A lost diploma is replaced by a copy from the master register (`bản sao từ sổ gốc`),
       never described as a reissued original.
 - [ ] Academic credit is `tín chỉ`; `tín dụng` is reserved for genuinely financial contexts.
+- [ ] EdTech terms avoid the 15 translationese traps (e.g., `nộp bài` not `đệ trình`, `tổng quan` not `bảng táp-lô`, `đánh giá quá trình` not `đánh giá định hình`, `chuỗi học tập` not `vệt học tập`).
 
-## 3. Tone — the part a regex cannot judge
+## 3. Pedagogical Quality & Tone
 
-- [ ] Does negative feedback name the behavior or competency, never the child
-      (`em cần cố gắng hơn ở môn Toán`, not `học sinh học kém`)?
-- [ ] Does a disciplinary notice reference the rule violated and the actual Vietnamese
-      mechanism (`vi phạm nội quy`, `hạ hạnh kiểm`), not a translated "detention"/"suspension"?
-- [ ] Does a parent notice read as genuinely informative, or as a form letter with the name
-      swapped in?
-- [ ] Read the report-card remark or notice aloud — would the actual student or parent
-      recognize themselves in it?
+- [ ] **Pronunciation Feedback (Sandwich Model):** Does pronunciation feedback praise effort first, explain the phoneme/tone fix constructively, and conclude with growth-mindset encouragement?
+- [ ] **No Shame/Guilt in Nudges:** Do learning nudges encourage habits without guilt-tripping learners who missed sessions?
+- [ ] **Empty States:** Does an empty UI state guide the learner with a clear, encouraging Call-to-Action (never raw `"Trạng thái trống"`)?
+- [ ] **Intrinsic Motivation (SDT):** Are mastery achievements celebrated with higher challenges rather than superficial XP farming?
+- [ ] Does negative feedback name the behavior or competency, never the child (`em cần cố gắng hơn ở môn Toán`, not `học sinh học kém`)?
 
-## 4. Minor data and consent
+## 4. Minor Data, Consent & Privacy (Nghị định 13/2023/NĐ-CP)
 
-- [ ] Does a portal or app reporting a specific child's grades or attendance to a parent state
-      the purpose of processing that data (Nghị định 13/2023/NĐ-CP)?
-- [ ] Is consent sought from the parent, not the (minor) student?
+- [ ] Does the onboarding / registration flow implement **Double Consent (Sự đồng ý kép)** for children from 7 years old (both child and parent/guardian)?
+- [ ] Does the platform clearly disclose the purpose of processing minor data?
+- [ ] Is audio/voice recording treated as sensitive biometric data and purged automatically after GOP scoring?
 
 ## 5. Formatting
 
@@ -69,9 +68,8 @@ Work top to bottom. Sections 1–2 catch more real defects than the rest combine
 ## Sign-off
 
 A change to the glossary, the grading-terminology tables, or the examples corpus needs a
-**native Vietnamese speaker with direct classroom, parenting, or university-admin experience**
-to approve it — the terminology here is legally and institutionally specific, not a matter of
-fluency.
+**native Vietnamese speaker with direct classroom, parenting, university-admin, or EdTech experience**
+to approve it.
 
 | Reviewer | Checks | Date |
 |---|---|---|

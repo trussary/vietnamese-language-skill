@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
-"""Rules for Vietnamese school and academic writing that a calque table cannot express.
+"""Rules for Vietnamese school, academic, and EdTech writing that a calque table cannot express.
 
 Loaded automatically by validate_copy.py because the filename starts with `rules_`.
 Standard library only, no imports from the engine — the contract is plain tuples.
 
 Every rule here is gated on `--doctype`, because the correct term depends on the schooling
-stage: `cần cố gắng` is mandatory on a primary report card and simply absent from a university
-transcript. A rule firing on a document it was never meant for is how a whole linter gets
-switched off, so nothing here is checked without the caller declaring what it is looking at.
+stage and educational context: `cần cố gắng` is mandatory on a primary report card and simply
+absent from a university transcript. A rule firing on a document it was never meant for is how
+a whole linter gets switched off, so nothing here is checked without the caller declaring what
+it is looking at.
 
 Two things the research proposed are deliberately NOT custom rules here, because the engine's
 existing mechanisms already cover them and duplicating a rule id would let one copy be disabled
@@ -31,6 +32,8 @@ RULE_DOCS = {
     "EDU003": "“cần cải thiện” on a primary report card instead of “cần cố gắng” (Thông tư 27/2020)",
     "EDU005": "“tín dụng” for academic credit instead of “tín chỉ” (Thông tư 08/2021)",
     "EDU006": "GPA written with a dot decimal instead of the Vietnamese comma",
+    "EDU007": "literal empty-state phrase on EdTech UI without an actionable CTA",
+    "EDU009": "unpedagogical or harsh pronunciation feedback violating the Sandwich model",
 }
 
 DOCTYPES = {
@@ -40,6 +43,10 @@ DOCTYPES = {
     "transcript": "a university transcript or GPA statement",
     "diploma": "diploma issuance or reissuance copy",
     "higher-ed": "university administrative prose — syllabi, course descriptions, registration",
+    "pronunciation-feedback": "AI / teacher pronunciation diagnostic feedback",
+    "edtech-microcopy": "EdTech product UI strings, empty states, and notifications",
+    "pedagogical-nudge": "pedagogical reminder and habit-loop notifications",
+    "parental-analytics": "learning analytics and progress reports for parents",
 }
 
 # The new (Thông tư 22/2021) overall scale is Tốt / Khá / Đạt / Chưa đạt. "Khá" carries over
@@ -61,6 +68,15 @@ CREDIT_CALQUE_RE = re.compile(r"(?<!\w)tín\s+dụng(?!\w)", re.IGNORECASE)
 # A GPA is always written as one decimal over another (3.6/4.0, 8.5/10). The generic NUM003
 # rule only fires next to tỷ/triệu/%/m², none of which sit next to a GPA.
 GPA_DOT_RE = re.compile(r"(?<!\d)\d\.\d{1,2}\s*/\s*\d(?:\.\d{1,2})?(?!\d)")
+
+# EdTech empty-state literal translations
+EMPTY_STATE_CALQUE_RE = re.compile(r"(?<!\w)(?:trạng\s+thái\s+trống|không\s+có\s+dữ\s+liệu)(?!\w)", re.IGNORECASE)
+
+# Unpedagogical harsh pronunciation feedback
+HARSH_FEEDBACK_RE = re.compile(
+    r"(?<!\w)(?:sai\s+rồi|bạn\s+(?:đã\s+)?phát\s+âm\s+sai|điểm\s+(?:phát\s+âm\s+)?của\s+bạn\s+là)(?!\w)",
+    re.IGNORECASE,
+)
 
 
 def check_line(ctx, lineno, raw, masked):
@@ -108,3 +124,17 @@ def check_line(ctx, lineno, raw, masked):
                    f"GPA written with a dot decimal “{match.group(0)}”",
                    "Vietnamese transcripts use a decimal comma — write "
                    f"“{match.group(0).replace('.', ',')}”")
+
+    if doctype == "edtech-microcopy":
+        for match in EMPTY_STATE_CALQUE_RE.finditer(masked):
+            yield ("EDU007", WARN, match.start() + 1, match.group(0),
+                   f"literal empty-state phrase “{match.group(0)}”",
+                   "never display raw “Trạng thái trống” / “Không có dữ liệu” — provide an "
+                   "encouraging, actionable Call to Action (see references/edtech-pedagogy.md)")
+
+    if doctype == "pronunciation-feedback":
+        for match in HARSH_FEEDBACK_RE.finditer(masked):
+            yield ("EDU009", WARN, match.start() + 1, match.group(0),
+                   f"unpedagogical negative feedback “{match.group(0)}”",
+                   "apply the Sandwich Feedback model (praise effort, provide constructive "
+                   "phoneme/tone tip, encourage growth mindset — see references/edtech-pedagogy.md)")
