@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# GENERATED FILE — do not edit. Source: shared/scripts/validate_copy.py (sha256 b644072a8fc37d2f).
+# GENERATED FILE — do not edit. Source: shared/scripts/validate_copy.py (sha256 f0874654375f9314).
 # Edit the source and run `python tools/sync_shared.py`.
 """Lint Vietnamese (vi-VN) copy for the defects LLMs reliably produce.
 
@@ -643,8 +643,15 @@ def collect(paths: Iterable[str], extensions: Sequence[str]) -> List[pathlib.Pat
             found: List[pathlib.Path] = []
             for dirpath, dirnames, filenames in os.walk(p):
                 dirnames[:] = [d for d in dirnames if d not in EXCLUDED_DIRS]
-                found.extend(pathlib.Path(dirpath) / name for name in filenames
-                             if pathlib.Path(name).suffix.lower() in extensions)
+                for name in filenames:
+                    if pathlib.Path(name).suffix.lower() not in extensions:
+                        continue
+                    candidate = pathlib.Path(dirpath) / name
+                    # os.walk() lists FIFOs, sockets, device files, and dangling
+                    # symlinks as "filenames" too; is_file() excludes those, matching
+                    # the old rglob()-based collector.
+                    if candidate.is_file():
+                        found.append(candidate)
             out.extend(sorted(found))
         elif p.exists():
             out.append(p)

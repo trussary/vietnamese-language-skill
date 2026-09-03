@@ -641,8 +641,15 @@ def collect(paths: Iterable[str], extensions: Sequence[str]) -> List[pathlib.Pat
             found: List[pathlib.Path] = []
             for dirpath, dirnames, filenames in os.walk(p):
                 dirnames[:] = [d for d in dirnames if d not in EXCLUDED_DIRS]
-                found.extend(pathlib.Path(dirpath) / name for name in filenames
-                             if pathlib.Path(name).suffix.lower() in extensions)
+                for name in filenames:
+                    if pathlib.Path(name).suffix.lower() not in extensions:
+                        continue
+                    candidate = pathlib.Path(dirpath) / name
+                    # os.walk() lists FIFOs, sockets, device files, and dangling
+                    # symlinks as "filenames" too; is_file() excludes those, matching
+                    # the old rglob()-based collector.
+                    if candidate.is_file():
+                        found.append(candidate)
             out.extend(sorted(found))
         elif p.exists():
             out.append(p)
