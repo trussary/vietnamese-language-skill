@@ -19,11 +19,20 @@ Exit codes: 0 = every codepoint covered, 1 = uncovered codepoints found, 2 = bad
 from __future__ import annotations
 
 import argparse
+import os
 import pathlib
 import re
 import sys
 import unicodedata
 from typing import Iterable, List, Sequence, Set, Tuple
+
+# Directories that are never source copy, only ever dependency/build/VCS trees. Pruned
+# during the walk so a lint of one file doesn't also stat every file under node_modules.
+EXCLUDED_DIRS = frozenset({
+    ".git", ".hg", ".svn", "node_modules", ".next", ".nuxt", "dist", "build", "out",
+    "target", "vendor", ".venv", "venv", "__pycache__", ".cache", ".turbo", ".yarn",
+    "coverage", ".pytest_cache", ".mypy_cache", ".tox",
+})
 
 # The Latin + Vietnamese subsets Google Fonts serves for a Vietnamese-capable face,
 # including the combining marks some faces rely on.
@@ -91,8 +100,19 @@ def collect(paths: Iterable[str], extensions: Sequence[str]) -> List[pathlib.Pat
     for raw in paths:
         p = pathlib.Path(raw)
         if p.is_dir():
-            out.extend(sorted(q for q in p.rglob("*")
-                              if q.is_file() and q.suffix.lower() in extensions))
+            found: List[pathlib.Path] = []
+            for dirpath, dirnames, filenames in os.walk(p):
+                dirnames[:] = [d for d in dirnames if d not in EXCLUDED_DIRS]
+                for name in filenames:
+                    if pathlib.Path(name).suffix.lower() not in extensions:
+                        continue
+                    candidate = pathlib.Path(dirpath) / name
+                    # os.walk() lists FIFOs, sockets, device files, and dangling
+                    # symlinks as "filenames" too; is_file() excludes those, matching
+                    # the old rglob()-based collector.
+                    if candidate.is_file():
+                        found.append(candidate)
+            out.extend(sorted(found))
         elif p.exists():
             out.append(p)
         else:

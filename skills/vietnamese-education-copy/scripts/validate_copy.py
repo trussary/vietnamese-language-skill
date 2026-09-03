@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# GENERATED FILE — do not edit. Source: shared/scripts/validate_copy.py (sha256 90b8d1555ba2cc58).
+# GENERATED FILE — do not edit. Source: shared/scripts/validate_copy.py (sha256 f0874654375f9314).
 # Edit the source and run `python tools/sync_shared.py`.
 """Lint Vietnamese (vi-VN) copy for the defects LLMs reliably produce.
 
@@ -43,6 +43,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import pathlib
 import re
 import sys
@@ -51,6 +52,16 @@ from typing import Iterable, List, Optional, Sequence
 
 ERROR = "error"
 WARN = "warning"
+
+# Directories that are never source copy, only ever dependency/build/VCS trees. A
+# project's node_modules or .git can hold hundreds of thousands of files; walking into
+# them turns a lint of one src/messages/ directory into a multi-minute traversal for a
+# handful of matching files. Pruned during the walk, not filtered after it.
+EXCLUDED_DIRS = frozenset({
+    ".git", ".hg", ".svn", "node_modules", ".next", ".nuxt", "dist", "build", "out",
+    "target", "vendor", ".venv", "venv", "__pycache__", ".cache", ".turbo", ".yarn",
+    "coverage", ".pytest_cache", ".mypy_cache", ".tox",
+})
 
 SCRIPT_DIR = pathlib.Path(__file__).resolve().parent
 REF_DIR = SCRIPT_DIR.parent / "references"
@@ -629,8 +640,19 @@ def collect(paths: Iterable[str], extensions: Sequence[str]) -> List[pathlib.Pat
     for raw in paths:
         p = pathlib.Path(raw)
         if p.is_dir():
-            out.extend(sorted(q for q in p.rglob("*")
-                              if q.is_file() and q.suffix.lower() in extensions))
+            found: List[pathlib.Path] = []
+            for dirpath, dirnames, filenames in os.walk(p):
+                dirnames[:] = [d for d in dirnames if d not in EXCLUDED_DIRS]
+                for name in filenames:
+                    if pathlib.Path(name).suffix.lower() not in extensions:
+                        continue
+                    candidate = pathlib.Path(dirpath) / name
+                    # os.walk() lists FIFOs, sockets, device files, and dangling
+                    # symlinks as "filenames" too; is_file() excludes those, matching
+                    # the old rglob()-based collector.
+                    if candidate.is_file():
+                        found.append(candidate)
+            out.extend(sorted(found))
         elif p.exists():
             out.append(p)
         else:
